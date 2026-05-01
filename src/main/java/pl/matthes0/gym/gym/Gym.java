@@ -1,15 +1,14 @@
 package pl.matthes0.gym.gym;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name="gyms")
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 public class Gym {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
