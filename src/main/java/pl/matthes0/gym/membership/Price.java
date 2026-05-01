@@ -1,4 +1,4 @@
-﻿package pl.matthes0.gym.membership;
+package pl.matthes0.gym.membership;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
