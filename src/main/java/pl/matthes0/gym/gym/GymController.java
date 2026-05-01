@@ -1,11 +1,9 @@
 package pl.matthes0.gym.gym;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.matthes0.gym.gym.dtos.GymCreateDto;
+import pl.matthes0.gym.gym.dtos.GymDetailsDto;
 
 import java.util.List;
 
@@ -21,12 +19,12 @@ public class GymController {
     }
 
     @GetMapping
-    public List<Gym> getAllGyms(){
+    public List<GymDetailsDto> getAllGyms(){
         return gymService.findAllGyms();
     }
 
     @PostMapping
-    public void addGym(GymCreateDto gymDto){
-        gymService.createGym(gymDto);
+    public GymDetailsDto addGym(@RequestBody GymCreateDto gymDto){
+        return gymService.createGym(gymDto);
     }
 }
