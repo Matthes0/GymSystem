@@ -1,7 +1,11 @@
 package pl.matthes0.gym.gym;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import pl.matthes0.gym.membership.Membership;
+
+import java.util.List;
 
 @Entity
 @Table(name="gyms")
@@ -17,4 +21,7 @@ public class Gym {
     private String name;
     private String address;
     private String phoneNumber;
+    @OneToMany(mappedBy = "gym", fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Membership> memberships;
 }

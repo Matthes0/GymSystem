@@ -1,10 +1,12 @@
 package pl.matthes0.gym.member;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import pl.matthes0.gym.membership.Membership;
 
 import java.time.LocalDate;
 
@@ -22,4 +24,8 @@ public class Member {
     private String email;
     private LocalDate membershipStartDate;
     private Status status;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "membership_id")
+    @JsonBackReference
+    private Membership membership;
 }
