@@ -5,5 +5,11 @@ import pl.matthes0.gym.membershipplan.dtos.MembershipPlanDetailsDto;
 
 import java.time.LocalDate;
 
-public record MemberDetailsDto(Long id, String fullName, String email, LocalDate membershipStartDate, Status status, MembershipPlanDetailsDto membershipPlanDetailsDto) {
+public record MemberDetailsDto(
+        Long id,
+        String fullName,
+        String email,
+        LocalDate membershipStartDate,
+        Status status,
+        MembershipPlanDetailsDto membershipPlanDetailsDto) {
 }
