@@ -8,7 +8,7 @@ import pl.matthes0.gym.gym.dtos.GymDetailsDto;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/gym")
+@RequestMapping("/api/gyms")
 public class GymController {
 
     private final GymService gymService;

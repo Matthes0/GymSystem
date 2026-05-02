@@ -3,7 +3,7 @@ package pl.matthes0.gym.gym;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
-import pl.matthes0.gym.membership.Membership;
+import pl.matthes0.gym.membershipplan.MembershipPlan;
 
 import java.util.List;
 
@@ -23,5 +23,5 @@ public class Gym {
     private String phoneNumber;
     @OneToMany(mappedBy = "gym", fetch = FetchType.LAZY)
     @JsonManagedReference
-    private List<Membership> memberships;
+    private List<MembershipPlan> membershipPlans;
 }

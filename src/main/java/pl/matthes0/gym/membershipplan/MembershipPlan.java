@@ -1,4 +1,4 @@
-package pl.matthes0.gym.membership;
+package pl.matthes0.gym.membershipplan;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -14,17 +14,18 @@ import pl.matthes0.gym.member.Member;
 import java.util.List;
 
 @Entity
-@Table(name="memberships")
+@Table(name="membership_plans")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class Membership {
+public class MembershipPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private MembershipPlan membershipPlan;
+    @Enumerated(EnumType.STRING)
+    private Plan plan;
     @Embedded
     private Price monthlyPrice;
     private Integer durationInMonths;
@@ -33,7 +34,7 @@ public class Membership {
     @JoinColumn(name = "gym_id")
     @JsonBackReference
     private Gym gym;
-    @OneToMany(mappedBy = "membership", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "membershipPlan", fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Member> members;
 }

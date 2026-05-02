@@ -29,14 +29,14 @@ class GymIntegrationTests {
         gym.setName("Something");
         gym.setAddress("Street 123");
         gym.setPhoneNumber("123456789");
-        mockMvc.perform(post("/api/gym")
+        mockMvc.perform(post("/api/gyms")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(gym)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.name").value("Something"));
 
-        mockMvc.perform(get("/api/gym"))
+        mockMvc.perform(get("/api/gyms"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("Something"));
     }

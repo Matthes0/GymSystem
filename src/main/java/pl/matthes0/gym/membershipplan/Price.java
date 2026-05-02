@@ -1,4 +1,4 @@
-package pl.matthes0.gym.membership;
+package pl.matthes0.gym.membershipplan;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -15,8 +15,8 @@ import java.util.Currency;
 @Data
 public class Price {
 
-    @Column(nullable = false)
-    private BigDecimal amount;
+    @Column(nullable = false, scale = 2)
+    private BigDecimal monthlyPrice;
 
     @Column(nullable = false)
     private Currency currency;
