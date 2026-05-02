@@ -5,7 +5,10 @@ import org.springframework.web.bind.annotation.*;
 import pl.matthes0.gym.membershipplan.dtos.MembershipPlanCreateDto;
 import pl.matthes0.gym.membershipplan.dtos.MembershipPlanDetailsDto;
 
+import java.util.List;
+
 @RestController
+@RequestMapping("/api/gyms/{gymId}/membership-plans")
 public class MembershipPlanController {
 
     private final MembershipPlanService membershipPlanService;
@@ -15,9 +18,12 @@ public class MembershipPlanController {
         this.membershipPlanService = membershipPlanService;
     }
     @PostMapping
-    @RequestMapping("/api/gyms/{gymId}/membership-plans")
     public MembershipPlanDetailsDto createMembershipPlan(@PathVariable Long gymId, @RequestBody MembershipPlanCreateDto membershipDto){
         return membershipPlanService.createMembershipPlan(gymId, membershipDto);
+    }
+    @GetMapping
+    public List<MembershipPlanDetailsDto> getAllMembershipPlans(@PathVariable Long gymId){
+        return membershipPlanService.getAllMembershipPlans(gymId);
     }
 
 }

@@ -8,6 +8,8 @@ import pl.matthes0.gym.gym.dtos.GymDetailsDto;
 import pl.matthes0.gym.membershipplan.dtos.MembershipPlanCreateDto;
 import pl.matthes0.gym.membershipplan.dtos.MembershipPlanDetailsDto;
 
+import java.util.List;
+
 @Service
 public class MembershipPlanService {
     private final MembershipPlanRepository membershipPlanRepository;
@@ -40,5 +42,15 @@ public class MembershipPlanService {
                         gym.getAddress(),
                         gym.getPhoneNumber())
         );
+    }
+    public List<MembershipPlanDetailsDto> getAllMembershipPlans(Long gymId){
+        Gym gym = gymRepository.findById(gymId).orElse(new Gym());
+        return gym.getMembershipPlans().stream().map(membershipPlan -> new MembershipPlanDetailsDto(
+                membershipPlan.getId(), membershipPlan.getName(), membershipPlan.getPlan(), membershipPlan.getMonthlyPrice(), membershipPlan.getDurationInMonths(), membershipPlan.getMaxMembers(),
+                new GymDetailsDto(gym.getId(),
+                    gym.getName(),
+                    gym.getAddress(),
+                    gym.getPhoneNumber())
+        )).toList();
     }
 }
