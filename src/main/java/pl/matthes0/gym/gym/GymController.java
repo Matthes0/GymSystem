@@ -24,7 +24,7 @@ public class GymController {
     }
 
     @PostMapping
-    public GymDetailsDto addGym(@RequestBody GymCreateDto gymDto){
+    public GymDetailsDto createGym(@RequestBody GymCreateDto gymDto){
         return gymService.createGym(gymDto);
     }
 }

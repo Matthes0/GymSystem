@@ -15,5 +15,7 @@ public class MemberController {
         this.memberService = memberService;
     }
 
+    public void createMember(){
 
+    }
 }

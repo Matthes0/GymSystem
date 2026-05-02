@@ -6,7 +6,6 @@ import pl.matthes0.gym.membershipplan.dtos.MembershipPlanCreateDto;
 import pl.matthes0.gym.membershipplan.dtos.MembershipPlanDetailsDto;
 
 @RestController
-@RequestMapping("/api/memberships")
 public class MembershipPlanController {
 
     private final MembershipPlanService membershipPlanService;
@@ -15,10 +14,10 @@ public class MembershipPlanController {
     public MembershipPlanController(MembershipPlanService membershipPlanService) {
         this.membershipPlanService = membershipPlanService;
     }
-
-//    @PostMapping
-//    public MembershipPlanDetailsDto addMembership(@PathVariable Long gymId, @RequestBody MembershipPlanCreateDto membershipDto){
-//
-//    }
+    @PostMapping
+    @RequestMapping("/api/gyms/{gymId}/membership-plans")
+    public MembershipPlanDetailsDto createMembershipPlan(@PathVariable Long gymId, @RequestBody MembershipPlanCreateDto membershipDto){
+        return membershipPlanService.createMembershipPlan(gymId, membershipDto);
+    }
 
 }
