@@ -13,19 +13,17 @@ public class MembershipPlanMapper {
 
     private final GymMapper gymMapper;
 
-    public MembershipPlan toEntity(MembershipPlanCreateDto membershipPlanCreateDto, Gym gym){
+    public MembershipPlan toEntity(MembershipPlanCreateDto membershipPlanCreateDto){
         if (membershipPlanCreateDto == null){
             return null;
         }
 
         MembershipPlan membershipPlan = new MembershipPlan();
-
         membershipPlan.setName(membershipPlanCreateDto.name());
         membershipPlan.setPlan(membershipPlanCreateDto.plan());
         membershipPlan.setMonthlyPrice(membershipPlanCreateDto.monthlyPrice());
         membershipPlan.setDurationInMonths(membershipPlanCreateDto.durationInMonths());
         membershipPlan.setMaxMembers(membershipPlanCreateDto.maxMembers());
-        membershipPlan.setGym(gym);
 
         return membershipPlan;
     }

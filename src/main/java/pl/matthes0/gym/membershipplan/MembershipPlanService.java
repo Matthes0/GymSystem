@@ -23,7 +23,10 @@ public class MembershipPlanService {
     public MembershipPlanDetailsDto createMembershipPlan(Long gymId, MembershipPlanCreateDto membershipPlanDto){
         Gym gym = gymRepository.findById(gymId)
                 .orElseThrow(() -> new NoSuchElementException("Gym with id " + gymId + " not found"));
-        MembershipPlan membershipPlan = membershipPlanMapper.toEntity(membershipPlanDto, gym);
+
+        MembershipPlan membershipPlan = membershipPlanMapper.toEntity(membershipPlanDto);
+        membershipPlan.setGym(gym);
+
         MembershipPlan savedPlan = membershipPlanRepository.save(membershipPlan);
         return membershipPlanMapper.toDetailsDto(savedPlan);
     }

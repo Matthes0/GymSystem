@@ -19,6 +19,7 @@ public class GymService {
     public GymDetailsDto createGym(GymCreateDto gymDto){
         Gym gym = gymMapper.toEntity(gymDto);
         Gym savedGym = gymRepository.save(gym);
+
         return gymMapper.toDetailsDto(savedGym);
 
     }

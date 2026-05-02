@@ -12,14 +12,13 @@ import pl.matthes0.gym.membershipplan.MembershipPlanMapper;
 public class MemberMapper {
     private final MembershipPlanMapper membershipPlanMapper;
 
-    public Member toEntity(MemberCreateDto memberCreateDto, MembershipPlan membershipPlan) {
+    public Member toEntity(MemberCreateDto memberCreateDto) {
         if (memberCreateDto == null) {
             return null;
         }
         Member member = new Member();
         member.setFullName(memberCreateDto.fullName());
         member.setEmail(memberCreateDto.email());
-        member.setMembershipPlan(membershipPlan);
         return member;
     }
     public MemberDetailsDto toDetailsDto(Member member){
