@@ -2,6 +2,7 @@ package pl.matthes0.gym.gym;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import pl.matthes0.gym.membershipplan.MembershipPlan;
 
@@ -18,8 +19,13 @@ public class Gym {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true, nullable = false)
+    @NotBlank(message = "Name is required")
     private String name;
+    @Column(nullable = false)
+    @NotBlank(message = "Address is required")
     private String address;
+    @Column(nullable = false)
+    @NotBlank(message = "Phone number is required")
     private String phoneNumber;
     @OneToMany(mappedBy = "gym", fetch = FetchType.LAZY)
     @JsonManagedReference

@@ -4,6 +4,10 @@ package pl.matthes0.gym.membershipplan;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,15 +27,28 @@ public class MembershipPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
+    @NotBlank(message = "Name is required")
     private String name;
+    @Column(nullable = false)
+    @NotNull(message = "Plan is required")
     @Enumerated(EnumType.STRING)
     private Plan plan;
     @Embedded
+    @Valid
+    @NotNull(message = "Price details are required")
     private Price monthlyPrice;
+    @Column(nullable = false)
+    @Positive(message = "Duration must be greater than zero")
+    @NotNull(message = "Duration in months is required")
     private Integer durationInMonths;
+    @Column(nullable = false)
+    @Positive(message = "Max members must be greater than zero")
+    @NotNull(message = "Max members are required")
     private Integer maxMembers;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "gym_id")
+    @JoinColumn(name = "gym_id", nullable = false)
+    @NotNull(message = "Gym is required")
     @JsonBackReference
     private Gym gym;
     @OneToMany(mappedBy = "membershipPlan", fetch = FetchType.LAZY)

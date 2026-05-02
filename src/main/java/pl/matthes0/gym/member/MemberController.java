@@ -1,7 +1,9 @@
 package pl.matthes0.gym.member;
 
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -9,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
     private final MemberService memberService;
 
-//    public MemberDetailsDto registerNewMember(@PathVariable Long membershipPlanId, @RequestBody MemberCreateDto memberDto){
+//    public MemberDetailsDto registerNewMember(@PathVariable Long membershipPlanId, @RequestBody @Valid MemberCreateDto memberDto){
 //        return memberService.registerNewMember(membershipPlanId, memberDto);
 //    }
 }

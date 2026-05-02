@@ -1,6 +1,6 @@
 package pl.matthes0.gym.membershipplan;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import pl.matthes0.gym.membershipplan.dtos.MembershipPlanCreateDto;
 import pl.matthes0.gym.membershipplan.dtos.MembershipPlanDetailsDto;
@@ -9,14 +9,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/gyms/{gymId}/membership-plans")
+@RequiredArgsConstructor
 public class MembershipPlanController {
-
     private final MembershipPlanService membershipPlanService;
 
-    @Autowired
-    public MembershipPlanController(MembershipPlanService membershipPlanService) {
-        this.membershipPlanService = membershipPlanService;
-    }
     @PostMapping
     public MembershipPlanDetailsDto createMembershipPlan(@PathVariable Long gymId, @RequestBody MembershipPlanCreateDto membershipPlanDto){
         return membershipPlanService.createMembershipPlan(gymId, membershipPlanDto);

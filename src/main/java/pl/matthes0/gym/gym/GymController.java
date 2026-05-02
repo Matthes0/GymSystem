@@ -1,6 +1,7 @@
 package pl.matthes0.gym.gym;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import pl.matthes0.gym.gym.dtos.GymCreateDto;
 import pl.matthes0.gym.gym.dtos.GymDetailsDto;
@@ -9,14 +10,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/gyms")
+@RequiredArgsConstructor
 public class GymController {
 
     private final GymService gymService;
-
-    @Autowired
-    public GymController(GymService gymService) {
-        this.gymService = gymService;
-    }
 
     @GetMapping
     public List<GymDetailsDto> getAllGyms(){
@@ -24,7 +21,7 @@ public class GymController {
     }
 
     @PostMapping
-    public GymDetailsDto createGym(@RequestBody GymCreateDto gymDto){
+    public GymDetailsDto createGym(@RequestBody @Valid GymCreateDto gymDto){
         return gymService.createGym(gymDto);
     }
 }
