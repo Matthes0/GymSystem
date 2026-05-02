@@ -1,13 +1,13 @@
-package pl.matthes0.gym;
+package pl.matthes0.gym.member;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.Test;
 
 @SpringBootTest
-class GymApplicationTests {
+class MemberIntegrationTest {
 
     @Test
     void contextLoads() {
-    }
 
+    }
 }
