@@ -1,21 +1,15 @@
 package pl.matthes0.gym.member;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/membership")
+@RequiredArgsConstructor
+@RequestMapping("/api/membership-plans/{membershipPlanId}/members")
 public class MemberController {
     private final MemberService memberService;
 
-    @Autowired
-    public MemberController(MemberService memberService) {
-        this.memberService = memberService;
-    }
-
-    public void createMember(){
-
-    }
+//    public MemberDetailsDto registerNewMember(@PathVariable Long membershipPlanId, @RequestBody MemberCreateDto memberDto){
+//        return memberService.registerNewMember(membershipPlanId, memberDto);
+//    }
 }

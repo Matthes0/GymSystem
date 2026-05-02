@@ -1,36 +1,31 @@
 package pl.matthes0.gym.gym;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.matthes0.gym.gym.dtos.GymCreateDto;
 import pl.matthes0.gym.gym.dtos.GymDetailsDto;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class GymService {
 
-    @Autowired
-    private GymRepository gymRepository;
+    private final GymRepository gymRepository;
+    private final GymMapper gymMapper;
 
-    GymDetailsDto createGym(GymCreateDto gymDto){
-        Gym gym = new Gym();
-        gym.setName(gymDto.name());
-        gym.setAddress(gymDto.address());
-        gym.setPhoneNumber(gymDto.phoneNumber());
-        gymRepository.save(gym);
-        return new GymDetailsDto(
-                gym.getId(),
-                gym.getName(),
-                gym.getAddress(),
-                gym.getPhoneNumber()
-        );
+    @Transactional
+    public GymDetailsDto createGym(GymCreateDto gymDto){
+        Gym gym = gymMapper.toEntity(gymDto);
+        Gym savedGym = gymRepository.save(gym);
+        return gymMapper.toDetailsDto(savedGym);
 
     }
-    List<GymDetailsDto> findAllGyms()
+    public List<GymDetailsDto> findAllGyms()
     {
         return gymRepository.findAll().stream()
-                .map(gym -> new GymDetailsDto(gym.getId(), gym.getName(), gym.getAddress(), gym.getPhoneNumber()))
+                .map(gymMapper::toDetailsDto)
                 .toList();
     }
 

@@ -18,8 +18,8 @@ public class MembershipPlanController {
         this.membershipPlanService = membershipPlanService;
     }
     @PostMapping
-    public MembershipPlanDetailsDto createMembershipPlan(@PathVariable Long gymId, @RequestBody MembershipPlanCreateDto membershipDto){
-        return membershipPlanService.createMembershipPlan(gymId, membershipDto);
+    public MembershipPlanDetailsDto createMembershipPlan(@PathVariable Long gymId, @RequestBody MembershipPlanCreateDto membershipPlanDto){
+        return membershipPlanService.createMembershipPlan(gymId, membershipPlanDto);
     }
     @GetMapping
     public List<MembershipPlanDetailsDto> getAllMembershipPlans(@PathVariable Long gymId){
