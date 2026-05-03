@@ -3,6 +3,8 @@ package pl.matthes0.gym.member;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.matthes0.gym.member.dtos.MemberCreateDto;
 import pl.matthes0.gym.member.dtos.MemberDetailsDto;
@@ -17,15 +19,18 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/membership-plans/{membershipPlanId}/members")
-    public MemberDetailsDto registerNewMember(@PathVariable Long membershipPlanId, @RequestBody @Valid MemberCreateDto memberDto){
-        return memberService.registerNewMember(membershipPlanId, memberDto);
+    public ResponseEntity<MemberDetailsDto> registerNewMember(@PathVariable Long membershipPlanId, @RequestBody @Valid MemberCreateDto memberDto){
+        MemberDetailsDto createdMember = memberService.registerNewMember(membershipPlanId, memberDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdMember);
     }
     @GetMapping("/members")
-    public List<MemberDetailsDto> getAllMembers(){
-        return memberService.getAllMembers();
+    public ResponseEntity<List<MemberDetailsDto>> getAllMembers(){
+        List<MemberDetailsDto> allMembersList = memberService.getAllMembers();
+        return ResponseEntity.ok(allMembersList);
     }
     @PatchMapping("/members/{id}/cancel")
-    public MemberDetailsDto cancelMembership(@PathVariable Long id){
-        return memberService.cancelMembership(id);
+    public ResponseEntity<MemberDetailsDto> cancelMembership(@PathVariable Long id){
+        MemberDetailsDto cancelledMember = memberService.cancelMembership(id);
+        return ResponseEntity.ok(cancelledMember);
     }
 }
