@@ -2,15 +2,15 @@ package pl.matthes0.gym.membershipplan;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import pl.matthes0.gym.gym.Gym;
 import pl.matthes0.gym.gym.GymRepository;
 import pl.matthes0.gym.membershipplan.dtos.MembershipPlanCreateDto;
 import pl.matthes0.gym.membershipplan.dtos.MembershipPlanDetailsDto;
-
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -22,8 +22,7 @@ public class MembershipPlanService {
     @Transactional
     public MembershipPlanDetailsDto createMembershipPlan(Long gymId, MembershipPlanCreateDto membershipPlanDto){
         Gym gym = gymRepository.findById(gymId)
-                .orElseThrow(() -> new NoSuchElementException("Gym with id " + gymId + " not found"));
-
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Gym with id " + gymId + " not found"));
         MembershipPlan membershipPlan = membershipPlanMapper.toEntity(membershipPlanDto);
         membershipPlan.setGym(gym);
 
@@ -32,7 +31,7 @@ public class MembershipPlanService {
     }
     public List<MembershipPlanDetailsDto> getAllMembershipPlans(Long gymId){
         if (!gymRepository.existsById(gymId)) {
-            throw new NoSuchElementException("Gym with id " + gymId + " not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Gym with id " + gymId + " not found");
         }
         return membershipPlanRepository.findByGymId(gymId).stream()
                 .map(membershipPlanMapper::toDetailsDto)

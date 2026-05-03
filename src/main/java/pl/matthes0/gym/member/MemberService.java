@@ -1,17 +1,16 @@
 package pl.matthes0.gym.member;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.matthes0.gym.gym.Gym;
+import org.springframework.web.server.ResponseStatusException;
 import pl.matthes0.gym.member.dtos.MemberCreateDto;
 import pl.matthes0.gym.member.dtos.MemberDetailsDto;
 import pl.matthes0.gym.membershipplan.MembershipPlan;
 import pl.matthes0.gym.membershipplan.MembershipPlanRepository;
-
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -23,10 +22,10 @@ public class MemberService {
     @Transactional
     public MemberDetailsDto registerNewMember(Long membershipPlanId, MemberCreateDto memberCreateDto) {
         MembershipPlan membershipPlan = membershipPlanRepository.findById(membershipPlanId)
-                .orElseThrow(() -> new NoSuchElementException("Membership plan with id " + membershipPlanId + " not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Membership plan with id " + membershipPlanId + " not found"));
         long activeMembersCount = memberRepository.countByMembershipPlanIdAndStatus(membershipPlanId, Status.ACTIVE);
         if (activeMembersCount >= membershipPlan.getMaxMembers()){
-            throw new IllegalStateException("This membership plan is already full");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This membership plan is already full");
         }
 
         Member member = memberMapper.toEntity(memberCreateDto);
@@ -46,7 +45,7 @@ public class MemberService {
     @Transactional
     public MemberDetailsDto cancelMembership(Long id) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Member with id " + id + " not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Member with id " + id + " not found"));
         member.setStatus(Status.CANCELLED);
         Member cancelledMember = memberRepository.save(member);
         return memberMapper.toDetailsDto(cancelledMember);
