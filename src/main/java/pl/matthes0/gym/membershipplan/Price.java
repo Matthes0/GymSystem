@@ -17,9 +17,9 @@ import java.util.Currency;
 @Data
 public class Price {
     @Column(nullable = false, scale = 2)
-    @NotNull(message = "Monthly price is required")
-    @DecimalMin(value = "0.01", message = "Monthly price must be greater than zero")
-    private BigDecimal monthlyPrice;
+    @NotNull(message = "Amount is required")
+    @DecimalMin(value = "0.01", message = "Amount must be greater than zero")
+    private BigDecimal amount;
 
     @Column(nullable = false)
     @NotNull(message = "Currency is required")

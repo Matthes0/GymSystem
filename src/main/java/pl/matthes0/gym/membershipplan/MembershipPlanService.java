@@ -34,7 +34,7 @@ public class MembershipPlanService {
         if (!gymRepository.existsById(gymId)) {
             throw new NoSuchElementException("Gym with id " + gymId + " not found");
         }
-        return membershipPlanRepository.findAllByGymId(gymId).stream()
+        return membershipPlanRepository.findByGymId(gymId).stream()
                 .map(membershipPlanMapper::toDetailsDto)
                 .toList();
     }

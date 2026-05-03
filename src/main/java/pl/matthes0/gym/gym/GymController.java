@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import pl.matthes0.gym.gym.dtos.GymCreateDto;
 import pl.matthes0.gym.gym.dtos.GymDetailsDto;
+import pl.matthes0.gym.gym.dtos.RevenueReportDto;
 
 import java.util.List;
 
@@ -24,4 +25,6 @@ public class GymController {
     public GymDetailsDto createGym(@RequestBody @Valid GymCreateDto gymDto){
         return gymService.createGym(gymDto);
     }
+    @GetMapping("/revenue")
+    public List<RevenueReportDto> getRevenue() { return gymService.getRevenue();}
 }

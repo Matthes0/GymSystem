@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.matthes0.gym.gym.dtos.GymCreateDto;
 import pl.matthes0.gym.gym.dtos.GymDetailsDto;
+import pl.matthes0.gym.gym.dtos.RevenueReportDto;
 
 import java.util.List;
 
@@ -30,4 +31,7 @@ public class GymService {
                 .toList();
     }
 
+    public List<RevenueReportDto> getRevenue() {
+        return gymRepository.getRevenueReport();
+    }
 }

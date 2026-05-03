@@ -28,5 +28,4 @@ public class MemberController {
     public MemberDetailsDto cancelMembership(@PathVariable Long id){
         return memberService.cancelMembership(id);
     }
-
 }
