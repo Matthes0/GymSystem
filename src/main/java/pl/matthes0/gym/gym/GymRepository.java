@@ -19,4 +19,6 @@ public interface GymRepository extends JpaRepository<Gym, Long> {
             "WHERE m.status = pl.matthes0.gym.member.Status.ACTIVE " +
             "GROUP BY g.name, p.monthlyPrice.currency")
     List<RevenueReportDto> getRevenueReport();
+
+    boolean existsByName(String name);
 }
