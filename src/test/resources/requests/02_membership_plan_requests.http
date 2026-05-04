@@ -8,10 +8,12 @@ Content-Type: application/json
 {
   "name": "Plan 1 power house",
   "plan": "BASIC",
+  "monthlyPrice": {
+    "amount": 100.00,
+    "currency": "PLN"
+  },
   "durationInMonths": 1,
-  "maxMembers": 100,
-  "amount": 100.00,
-  "currency": "PLN"
+  "maxMembers": 100
 }
 > {% client.global.set("plan_id_1", response.body.id); %}
 
@@ -22,10 +24,12 @@ Content-Type: application/json
 {
   "name": "Plan 2 Power House",
   "plan": "BASIC",
+  "monthlyPrice": {
+    "amount": 500.12,
+    "currency": "PLN"
+  },
   "durationInMonths": 6,
-  "maxMembers": 150,
-  "amount": 500.12,
-  "currency": "PLN"
+  "maxMembers": 150
 }
 > {% client.global.set("plan_id_2", response.body.id); %}
 
@@ -36,10 +40,12 @@ Content-Type: application/json
 {
   "name": "Plan 3 Power House",
   "plan": "PREMIUM",
+  "monthlyPrice": {
+    "amount": 250.71,
+    "currency": "EUR"
+  },
   "durationInMonths": 12,
-  "maxMembers": 50,
-  "amount": 250.00,
-  "currency": "EUR"
+  "maxMembers": 50
 }
 > {% client.global.set("plan_id_3", response.body.id); %}
 
@@ -50,10 +56,12 @@ Content-Type: application/json
 {
   "name": "Default 3 years",
   "plan": "BASIC",
+  "monthlyPrice": {
+    "amount": 89.00,
+    "currency": "PLN"
+  },
   "durationInMonths": 36,
-  "maxMembers": 30,
-  "amount": 89.00,
-  "currency": "PLN"
+  "maxMembers": 30
 }
 > {% client.global.set("plan_id_pulawy_gym", response.body.id); %}
 
@@ -64,10 +72,12 @@ Content-Type: application/json
 {
   "name": "Super VIP Elite",
   "plan": "PREMIUM",
+  "monthlyPrice": {
+    "amount": 299.99,
+    "currency": "GBP"
+  },
   "durationInMonths": 1,
-  "maxMembers": 1,
-  "amount": 299.99,
-  "currency": "GBP"
+  "maxMembers": 1
 }
 > {% client.global.set("plan_id_super_gym", response.body.id); %}
 
