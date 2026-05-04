@@ -69,7 +69,6 @@ class GymMapperTest {
         Gym gym = new Gym();
         gym.setId(99L);
         gym.setName("Minimalist Gym");
-        // address and phoneNumber null
 
         GymDetailsDto result = mapper.toDetailsDto(gym);
 
