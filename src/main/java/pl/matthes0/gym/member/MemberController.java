@@ -18,9 +18,9 @@ import java.util.List;
 public class MemberController {
     private final MemberService memberService;
 
-    @PostMapping("/membership-plans/{membershipPlanId}/members")
-    public ResponseEntity<MemberDetailsDto> registerNewMember(@PathVariable Long membershipPlanId, @RequestBody @Valid MemberCreateDto memberDto){
-        MemberDetailsDto createdMember = memberService.registerNewMember(membershipPlanId, memberDto);
+    @PostMapping("/membership-plans/{id}/members")
+    public ResponseEntity<MemberDetailsDto> registerNewMember(@PathVariable Long id, @RequestBody @Valid MemberCreateDto memberDto){
+        MemberDetailsDto createdMember = memberService.registerNewMember(id, memberDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdMember);
     }
     @GetMapping("/members")

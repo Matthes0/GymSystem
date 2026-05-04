@@ -30,7 +30,15 @@ Project uses an H2 in-memory database.
 ***
 
 ## REST API Endpoints 
-
+Base URL: ```http://localhost:8080/api```
+- /gyms [GET] List all gyms
+- /gyms [POST] Create a new gym
+- /gyms/revenue [GET] Return the revenue report 
+- /members [GET] List all members with plan name, gym name and status
+- /members/{id}/cancel [PATCH] Cancel a membership
+- /membership-plans/{id}/members [POST] Register a new member to a given membership plan
+- /gyms/{id}/membership-plans [GET] List all membership plans for a given gym
+- /gyms/{id}/membership-plans [POST] Create a new membership plan for a given gym
 
 ***
 

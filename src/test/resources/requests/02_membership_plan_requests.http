@@ -1,0 +1,78 @@
+### Variables
+@baseUrl = http://localhost:8080/api
+
+### 1a. First Plan Power House Standard PLN
+POST {{baseUrl}}/gyms/{{gym_id_power_house}}/membership-plans
+Content-Type: application/json
+
+{
+  "name": "Plan 1 power house",
+  "plan": "BASIC",
+  "durationInMonths": 1,
+  "maxMembers": 100,
+  "amount": 100.00,
+  "currency": "PLN"
+}
+> {% client.global.set("plan_id_1", response.body.id); %}
+
+### 1b. Second Plan Power House Standard PLN
+POST {{baseUrl}}/gyms/{{gym_id_power_house}}/membership-plans
+Content-Type: application/json
+
+{
+  "name": "Plan 2 Power House",
+  "plan": "BASIC",
+  "durationInMonths": 6,
+  "maxMembers": 150,
+  "amount": 500.12,
+  "currency": "PLN"
+}
+> {% client.global.set("plan_id_2", response.body.id); %}
+
+### 1c. Third plan Power House Premium EUR
+POST {{baseUrl}}/gyms/{{gym_id_power_house}}/membership-plans
+Content-Type: application/json
+
+{
+  "name": "Plan 3 Power House",
+  "plan": "PREMIUM",
+  "durationInMonths": 12,
+  "maxMembers": 50,
+  "amount": 250.00,
+  "currency": "EUR"
+}
+> {% client.global.set("plan_id_3", response.body.id); %}
+
+### 4. Pulawy Gym
+POST {{baseUrl}}/gyms/{{gym_id_pulawy_gym}}/membership-plans
+Content-Type: application/json
+
+{
+  "name": "Default 3 years",
+  "plan": "BASIC",
+  "durationInMonths": 36,
+  "maxMembers": 30,
+  "amount": 89.00,
+  "currency": "PLN"
+}
+> {% client.global.set("plan_id_pulawy_gym", response.body.id); %}
+
+### 5. Super Gym (only 1 member)
+POST {{baseUrl}}/gyms/{{gym_id_super_gym}}/membership-plans
+Content-Type: application/json
+
+{
+  "name": "Super VIP Elite",
+  "plan": "PREMIUM",
+  "durationInMonths": 1,
+  "maxMembers": 1,
+  "amount": 299.99,
+  "currency": "GBP"
+}
+> {% client.global.set("plan_id_super_gym", response.body.id); %}
+
+### Get plans for Power House
+GET {{baseUrl}}/gyms/{{gym_id_power_house}}/membership-plans
+
+### Get plans for Iron Gym to verify
+GET {{baseUrl}}/gyms/{{gym_id_iron_gym}}/membership-plans
