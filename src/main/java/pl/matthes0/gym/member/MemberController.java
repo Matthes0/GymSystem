@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.matthes0.gym.member.dtos.MemberCreateDto;
 import pl.matthes0.gym.member.dtos.MemberDetailsDto;
+import pl.matthes0.gym.member.dtos.MemberSimpleDto;
 
 import java.util.List;
 
@@ -24,8 +25,8 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdMember);
     }
     @GetMapping("/members")
-    public ResponseEntity<List<MemberDetailsDto>> getAllMembers(){
-        List<MemberDetailsDto> allMembersList = memberService.getAllMembers();
+    public ResponseEntity<List<MemberSimpleDto>> getAllMembers(){
+        List<MemberSimpleDto> allMembersList = memberService.getAllMembers();
         return ResponseEntity.ok(allMembersList);
     }
     @PatchMapping("/members/{id}/cancel")

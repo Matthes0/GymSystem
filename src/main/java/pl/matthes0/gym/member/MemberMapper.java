@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import pl.matthes0.gym.member.dtos.MemberCreateDto;
 import pl.matthes0.gym.member.dtos.MemberDetailsDto;
-import pl.matthes0.gym.membershipplan.MembershipPlan;
+import pl.matthes0.gym.member.dtos.MemberSimpleDto;
 import pl.matthes0.gym.membershipplan.MembershipPlanMapper;
 
 @Component
@@ -32,6 +32,20 @@ public class MemberMapper {
                 member.getMembershipStartDate(),
                 member.getStatus(),
                 membershipPlanMapper.toDetailsDto(member.getMembershipPlan())
+        );
+    }
+    public MemberSimpleDto toSimpleDto(Member member) {
+        if (member == null) {
+            return null;
+        }
+        return new MemberSimpleDto(
+                member.getId(),
+                member.getFullName(),
+                member.getEmail(),
+                member.getMembershipStartDate(),
+                member.getStatus(),
+                member.getMembershipPlan().getName(),
+                member.getMembershipPlan().getGym().getName()
         );
     }
 }

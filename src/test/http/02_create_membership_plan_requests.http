@@ -1,12 +1,12 @@
 ### Variables
 @baseUrl = http://localhost:8080/api
 
-### 1a. First Plan Power House Standard PLN
-POST {{baseUrl}}/gyms/{{gym_id_power_house}}/membership-plans
+### 1. Plan 1 for Gym 1
+POST {{baseUrl}}/gyms/{{gym_id_1}}/membership-plans
 Content-Type: application/json
 
 {
-  "name": "Plan 1 power house",
+  "name": "Plan 1 Power House",
   "plan": "BASIC",
   "monthlyPrice": {
     "amount": 100.00,
@@ -17,8 +17,8 @@ Content-Type: application/json
 }
 > {% client.global.set("plan_id_1", response.body.id); %}
 
-### 1b. Second Plan Power House Standard PLN
-POST {{baseUrl}}/gyms/{{gym_id_power_house}}/membership-plans
+### 2. Plan 2 for Gym 1
+POST {{baseUrl}}/gyms/{{gym_id_1}}/membership-plans
 Content-Type: application/json
 
 {
@@ -33,8 +33,8 @@ Content-Type: application/json
 }
 > {% client.global.set("plan_id_2", response.body.id); %}
 
-### 1c. Third plan Power House Premium EUR
-POST {{baseUrl}}/gyms/{{gym_id_power_house}}/membership-plans
+### 3. Plan 3 for Gym 1
+POST {{baseUrl}}/gyms/{{gym_id_1}}/membership-plans
 Content-Type: application/json
 
 {
@@ -49,8 +49,8 @@ Content-Type: application/json
 }
 > {% client.global.set("plan_id_3", response.body.id); %}
 
-### 4. Pulawy Gym
-POST {{baseUrl}}/gyms/{{gym_id_pulawy_gym}}/membership-plans
+### 4. Plan 4 for Gym 4
+POST {{baseUrl}}/gyms/{{gym_id_4}}/membership-plans
 Content-Type: application/json
 
 {
@@ -63,10 +63,10 @@ Content-Type: application/json
   "durationInMonths": 36,
   "maxMembers": 30
 }
-> {% client.global.set("plan_id_pulawy_gym", response.body.id); %}
+> {% client.global.set("plan_id_4", response.body.id); %}
 
-### 5. Super Gym (only 1 member)
-POST {{baseUrl}}/gyms/{{gym_id_super_gym}}/membership-plans
+### 5. Plan 5 for Gym 5
+POST {{baseUrl}}/gyms/{{gym_id_5}}/membership-plans
 Content-Type: application/json
 
 {
@@ -79,10 +79,13 @@ Content-Type: application/json
   "durationInMonths": 1,
   "maxMembers": 1
 }
-> {% client.global.set("plan_id_super_gym", response.body.id); %}
+> {% client.global.set("plan_id_5", response.body.id); %}
 
-### Get plans for Power House
-GET {{baseUrl}}/gyms/{{gym_id_power_house}}/membership-plans
+### Get plans for Gym 1
+GET {{baseUrl}}/gyms/{{gym_id_1}}/membership-plans
 
-### Get plans for Iron Gym to verify
-GET {{baseUrl}}/gyms/{{gym_id_iron_gym}}/membership-plans
+### Get plans for Gym 4
+GET {{baseUrl}}/gyms/{{gym_id_4}}/membership-plans
+
+### Get plans for Gym 2
+GET {{baseUrl}}/gyms/{{gym_id_2}}/membership-plans

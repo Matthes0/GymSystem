@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import pl.matthes0.gym.member.dtos.MemberCreateDto;
 import pl.matthes0.gym.member.dtos.MemberDetailsDto;
+import pl.matthes0.gym.member.dtos.MemberSimpleDto;
 import pl.matthes0.gym.membershipplan.MembershipPlan;
 import pl.matthes0.gym.membershipplan.MembershipPlanRepository;
 import java.time.LocalDate;
@@ -37,9 +38,9 @@ public class MemberService {
         return memberMapper.toDetailsDto(savedMember);
     }
 
-    public List<MemberDetailsDto> getAllMembers() {
+    public List<MemberSimpleDto> getAllMembers() {
         return memberRepository.findAll().stream()
-                .map(memberMapper::toDetailsDto)
+                .map(memberMapper::toSimpleDto)
                 .toList();
     }
     @Transactional

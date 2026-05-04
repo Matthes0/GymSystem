@@ -1,0 +1,18 @@
+### Variables
+@baseUrl = http://localhost:8080/api
+
+### 1. GET revenue report (Initial state)
+GET {{baseUrl}}/gyms/revenue
+
+### 2. GET all members (Initial state)
+GET {{baseUrl}}/members
+
+### 3. PATCH cancel Member 5 membership
+PATCH {{baseUrl}}/members/{{member_id_5}}/cancel
+Content-Type: application/json
+
+### 4. GET revenue report (After cancellation)
+GET {{baseUrl}}/gyms/revenue
+
+### 5. GET all members (After cancellation)
+GET {{baseUrl}}/members
