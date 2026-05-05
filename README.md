@@ -24,14 +24,24 @@ Project uses an H2 in-memory database.
 
 ## REST API Endpoints 
 Base URL: ```http://localhost:8080/api```
-- ```/gyms``` - **[GET]** - List all gyms
+
+*Note: All endpoints communicate using JSON format.*
+
 - ```/gyms ``` - **[POST]** - Create a new gym
-- ```/gyms/revenue``` - **[GET]** - Return the revenue report 
-- ```/members ``` - **[GET]** - List all members with plan name, gym name and status
-- ```/members/{id}/cancel``` - **[PATCH]** - Cancel a membership
-- ```/membership-plans/{id}/members``` - **[POST]** - Register a new member to a given membership plan
-- ```/gyms/{id}/membership-plans``` - **[GET]** - List all membership plans for a given gym
+- ```/gyms``` - **[GET]** - List all gyms
 - ```/gyms/{id}/membership-plans``` - **[POST]** - Create a new membership plan for a given gym
+- ```/gyms/{id}/membership-plans``` - **[GET]** - List all membership plans for a given gym
+- ```/membership-plans/{id}/members``` - **[POST]** - Register a new member to a given membership plan
+- ```/members ``` - **[GET]** - List all members along with their plan name and gym name
+- ```/members/{id}/cancel``` - **[PATCH]** - Cancel a membership
+- ```/gyms/revenue``` - **[GET]** - Return the revenue report
+
+## Data Validation
+The application enforces data integrity and validation rules: 
+- **Request Validation**: All request fields in DTOs along with path id fields are mandatory and are also validated by length, type and correctness of data
+- **Database Constraints**: All columns enforce ```NOT NULL``` constraints. Text fields are further validated using ```@NotBlank```. Other data constraints from Request Validation layer are also mirrored here
+
+Refer to the API Documentation section for specific request formats, data types, and validation constraints.
 
 ## Sample queries
 Sample queries are located in ```src/test/http/``` directory, numbered in order of recommended usage:
@@ -39,6 +49,8 @@ Sample queries are located in ```src/test/http/``` directory, numbered in order 
 - ```02_create_membership_plan_requests.http``` - sample membership plan creation POST requests, GET membership plans for Gym 1, 4, 2
 - ```03_create_member_requests.http``` - sample member creation POST requests, GET all members
 - ```04_other_requests.http``` - GET revenue report, GET all members, PATCH cancel Member 5 membership, GET revenue report, GET all members
+
+Queries use IntelliJ HTTP Client variables (e.g., `{{gym_id_1}}`) to streamline the testing workflow. In the case of manually executing those requests ensure that all ```{{variable_name}}``` placeholders are replaced with actual IDs.
 
 ## API Documentation
 API Documentation provides a detailed overview of the available endpoints, including request formats and input validation constraints.
