@@ -1,5 +1,6 @@
 package pl.matthes0.gym.membershipplan;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ public class MembershipPlanController {
     private final MembershipPlanService membershipPlanService;
 
     @PostMapping
-    public ResponseEntity<MembershipPlanDetailsDto> createMembershipPlan(@PathVariable Long id, @RequestBody MembershipPlanCreateDto membershipPlanDto){
+    public ResponseEntity<MembershipPlanDetailsDto> createMembershipPlan(@PathVariable Long id, @Valid @RequestBody MembershipPlanCreateDto membershipPlanDto){
         MembershipPlanDetailsDto createdMembershipPlan = membershipPlanService.createMembershipPlan(id, membershipPlanDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdMembershipPlan);
     }

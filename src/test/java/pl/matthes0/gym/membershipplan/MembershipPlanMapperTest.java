@@ -27,7 +27,6 @@ class MembershipPlanMapperTest {
     @InjectMocks
     private MembershipPlanMapper mapper;
 
-    // success test cases
 
     @Test
     @DisplayName("Should correctly map MembershipPlanCreateDto to MembershipPlan entity")
@@ -75,7 +74,6 @@ class MembershipPlanMapperTest {
         assertEquals(gymDto, result.gymDetailsDto());
     }
 
-    // edge test cases
 
     @Test
     @DisplayName("Should return null when mapping null MembershipPlanCreateDto")

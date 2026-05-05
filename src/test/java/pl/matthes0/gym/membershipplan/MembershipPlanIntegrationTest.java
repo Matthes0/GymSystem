@@ -36,7 +36,7 @@ class MembershipPlanIntegrationTest {
                 .andExpect(status().isCreated())
                 .andReturn();
         String response = gymResult.getResponse().getContentAsString();
-        Integer gymId = com.jayway.jsonpath.JsonPath.read(response, "$.id");
+        Long gymId = ((Number) com.jayway.jsonpath.JsonPath.read(response, "$.id")).longValue();
         String jsonRequest = """
         {
             "name": "Pro Plan",

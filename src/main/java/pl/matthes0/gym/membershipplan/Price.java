@@ -3,6 +3,7 @@ package pl.matthes0.gym.membershipplan;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,9 +17,10 @@ import java.util.Currency;
 @AllArgsConstructor
 @Data
 public class Price {
-    @Column(nullable = false, scale = 2)
+    @Column(nullable = false, scale = 2, precision = 10)
     @NotNull(message = "Amount is required")
     @DecimalMin(value = "0.01", message = "Amount must be greater than zero")
+    @Digits(integer = 8, fraction = 2)
     private BigDecimal amount;
 
     @Column(nullable = false)
