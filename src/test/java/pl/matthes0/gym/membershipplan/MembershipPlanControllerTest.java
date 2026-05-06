@@ -3,9 +3,11 @@ package pl.matthes0.gym.membershipplan;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.server.ResponseStatusException;
 import pl.matthes0.gym.gym.dtos.GymDetailsDto;
 import pl.matthes0.gym.membershipplan.dtos.MembershipPlanCreateDto;
 import pl.matthes0.gym.membershipplan.dtos.MembershipPlanDetailsDto;
@@ -258,8 +260,30 @@ class MembershipPlanControllerTest {
                         .content(jsonWithInvalidEnum))
                 .andExpect(status().isBadRequest());
     }
+    @Test
+    void shouldReturn404WhenGettingPlansForNonExistentGym() throws Exception {
+        Long nonExistentGymId = 999L;
+        when(membershipPlanService.getAllMembershipPlans(nonExistentGymId))
+                .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Gym with id 999 not found"));
 
+        mockMvc.perform(get("/api/gyms/" + nonExistentGymId + "/membership-plans"))
+                .andExpect(status().isNotFound());
+    }
+    @Test
+    void shouldReturn404WhenCreatingPlanForNonExistentGym() throws Exception {
+        Long nonExistentGymId = 999L;
+        Price price = new Price(new BigDecimal("100"), Currency.getInstance("PLN"));
+        MembershipPlanCreateDto dto = new MembershipPlanCreateDto(
+                "Plan", Plan.BASIC, price, 1, 10);
 
+        when(membershipPlanService.createMembershipPlan(eq(nonExistentGymId), any(MembershipPlanCreateDto.class)))
+                .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Gym with id 999 not found"));
+
+        mockMvc.perform(post("/api/gyms/" + nonExistentGymId + "/membership-plans")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isNotFound());
+    }
     private void performPostAndExpect400(MembershipPlanCreateDto dto) throws Exception {
         mockMvc.perform(post("/api/gyms/1/membership-plans")
                         .contentType(MediaType.APPLICATION_JSON)

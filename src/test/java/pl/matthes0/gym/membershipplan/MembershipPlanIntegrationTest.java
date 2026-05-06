@@ -20,7 +20,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 class MembershipPlanIntegrationTest {
-
     @Autowired
     private MockMvc mockMvc;
 
