@@ -4,13 +4,16 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import pl.matthes0.gym.membershipplan.MembershipPlan;
 
 import java.util.List;
 
 @Entity
-@Table(name="gyms")
+@Table(name = "gyms")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

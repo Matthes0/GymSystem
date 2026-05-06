@@ -9,7 +9,9 @@ Content-Type: application/json
   "fullName": "Jan Kowalski",
   "email": "jan.kowalski@test.com"
 }
-> {% client.global.set("member_id_1", response.body.id); %}
+> {%
+    client.global.set("member_id_1", response.body.id);
+%}
 
 ### 2. Register Anna Nowak to Plan 2
 POST {{baseUrl}}/membership-plans/{{plan_id_2}}/members
@@ -19,7 +21,9 @@ Content-Type: application/json
   "fullName": "Anna Nowak",
   "email": "anna.nowak@test.com"
 }
-> {% client.global.set("member_id_2", response.body.id); %}
+> {%
+    client.global.set("member_id_2", response.body.id);
+%}
 
 ### 3. Register Robert Lewandowski to Plan 3
 POST {{baseUrl}}/membership-plans/{{plan_id_3}}/members
@@ -29,7 +33,9 @@ Content-Type: application/json
   "fullName": "Robert Lewandowski",
   "email": "robert.lewandowski@test.com"
 }
-> {% client.global.set("member_id_3", response.body.id); %}
+> {%
+    client.global.set("member_id_3", response.body.id);
+%}
 
 ### 4. Register Mariusz Pudzianowski to Plan 4
 POST {{baseUrl}}/membership-plans/{{plan_id_4}}/members
@@ -39,7 +45,9 @@ Content-Type: application/json
   "fullName": "Mariusz Pudzianowski",
   "email": "mariusz.pudzianowski@test.com"
 }
-> {% client.global.set("member_id_4", response.body.id); %}
+> {%
+    client.global.set("member_id_4", response.body.id);
+%}
 
 ### 5. Register Adam Malysz to Plan 5
 POST {{baseUrl}}/membership-plans/{{plan_id_5}}/members
@@ -49,7 +57,9 @@ Content-Type: application/json
   "fullName": "Adam Malysz",
   "email": "adam.malysz@test.com"
 }
-> {% client.global.set("member_id_5", response.body.id); %}
+> {%
+    client.global.set("member_id_5", response.body.id);
+%}
 
 ### 6. Register Marek Jankowski to Plan 1
 POST {{baseUrl}}/membership-plans/{{plan_id_1}}/members
@@ -59,7 +69,9 @@ Content-Type: application/json
   "fullName": "Marek Jankowski",
   "email": "marek.jankowski@test.com"
 }
-> {% client.global.set("member_id_6", response.body.id); %}
+> {%
+    client.global.set("member_id_6", response.body.id);
+%}
 
 ### 7. Register Ewa Kwiatkowska to Plan 2
 POST {{baseUrl}}/membership-plans/{{plan_id_2}}/members
@@ -69,7 +81,9 @@ Content-Type: application/json
   "fullName": "Ewa Kwiatkowska",
   "email": "ewa.kwiatkowska@test.com"
 }
-> {% client.global.set("member_id_7", response.body.id); %}
+> {%
+    client.global.set("member_id_7", response.body.id);
+%}
 
 ### 8. Register Piotr Zielinski to Plan 3
 POST {{baseUrl}}/membership-plans/{{plan_id_3}}/members
@@ -79,7 +93,9 @@ Content-Type: application/json
   "fullName": "Piotr Zielinski",
   "email": "piotr.zielinski@test.com"
 }
-> {% client.global.set("member_id_8", response.body.id); %}
+> {%
+    client.global.set("member_id_8", response.body.id);
+%}
 
 ### 9. Register Monika Nowak to Plan 4
 POST {{baseUrl}}/membership-plans/{{plan_id_4}}/members
@@ -89,7 +105,9 @@ Content-Type: application/json
   "fullName": "Monika Nowak",
   "email": "monika.nowak@test.com"
 }
-> {% client.global.set("member_id_9", response.body.id); %}
+> {%
+    client.global.set("member_id_9", response.body.id);
+%}
 
 ### 10. Register Krzysztof Krawczyk to Plan 2
 POST {{baseUrl}}/membership-plans/{{plan_id_2}}/members
@@ -99,7 +117,9 @@ Content-Type: application/json
   "fullName": "Krzysztof Krawczyk",
   "email": "krzysztof.krawczyk@test.com"
 }
-> {% client.global.set("member_id_10", response.body.id); %}
+> {%
+    client.global.set("member_id_10", response.body.id);
+%}
 
 ### Get all members to verify
 GET {{baseUrl}}/members

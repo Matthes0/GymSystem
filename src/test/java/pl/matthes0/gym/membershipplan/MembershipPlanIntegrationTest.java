@@ -35,19 +35,19 @@ class MembershipPlanIntegrationTest {
                 .andExpect(status().isCreated())
                 .andReturn();
         String response = gymResult.getResponse().getContentAsString();
-        Long gymId = ((Number) com.jayway.jsonpath.JsonPath.read(response, "$.id")).longValue();
+        long gymId = ((Number) com.jayway.jsonpath.JsonPath.read(response, "$.id")).longValue();
         String jsonRequest = """
-        {
-            "name": "Pro Plan",
-            "plan": "PREMIUM",
-            "monthlyPrice": {
-                "amount": 150.12,
-                "currency": "PLN"
-            },
-            "durationInMonths": 12,
-            "maxMembers": 100
-        }
-        """;
+                {
+                    "name": "Pro Plan",
+                    "plan": "PREMIUM",
+                    "monthlyPrice": {
+                        "amount": 150.12,
+                        "currency": "PLN"
+                    },
+                    "durationInMonths": 12,
+                    "maxMembers": 100
+                }
+                """;
         mockMvc.perform(post("/api/gyms/" + gymId + "/membership-plans")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
@@ -59,17 +59,17 @@ class MembershipPlanIntegrationTest {
                 .andExpect(jsonPath("$.monthlyPrice.amount").value(150.12))
                 .andExpect(jsonPath("$.monthlyPrice.currency").value("PLN"));
         String jsonRequest2 = """
-        {
-            "name": "Basic Plan",
-            "plan": "BASIC",
-            "monthlyPrice": {
-                "amount": 20.11,
-                "currency": "GBP"
-            },
-            "durationInMonths": 50,
-            "maxMembers": 10
-        }
-        """;
+                {
+                    "name": "Basic Plan",
+                    "plan": "BASIC",
+                    "monthlyPrice": {
+                        "amount": 20.11,
+                        "currency": "GBP"
+                    },
+                    "durationInMonths": 50,
+                    "maxMembers": 10
+                }
+                """;
         mockMvc.perform(post("/api/gyms/" + gymId + "/membership-plans")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest2))

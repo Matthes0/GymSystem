@@ -53,6 +53,7 @@ class GymServiceTest {
         assertEquals(1, result.size());
         verify(repository, times(1)).findAll();
     }
+
     @Test
     void shouldThrowConflictExceptionWhenCreatingGymWithExistingName() {
         String gymName = "Iron Paradise";

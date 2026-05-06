@@ -1,13 +1,16 @@
 package pl.matthes0.gym.membershipplan.dtos;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import pl.matthes0.gym.membershipplan.Plan;
 import pl.matthes0.gym.membershipplan.Price;
 
 public record MembershipPlanCreateDto(
         @NotBlank(message = "Name is required")
-        @Size(max=100, message = "Name is too long")
+        @Size(max = 100, message = "Name is too long")
         String name,
 
         @NotNull(message = "Plan is required")

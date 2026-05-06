@@ -6,13 +6,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pl.matthes0.gym.gym.Gym;
 import pl.matthes0.gym.member.dtos.MemberCreateDto;
 import pl.matthes0.gym.member.dtos.MemberDetailsDto;
 import pl.matthes0.gym.member.dtos.MemberSimpleDto;
 import pl.matthes0.gym.membershipplan.MembershipPlan;
 import pl.matthes0.gym.membershipplan.MembershipPlanMapper;
 import pl.matthes0.gym.membershipplan.dtos.MembershipPlanDetailsDto;
-import pl.matthes0.gym.gym.Gym;
 
 import java.time.LocalDate;
 
@@ -93,7 +93,6 @@ class MemberMapperTest {
         assertEquals("Power Gym", result.gymName());
     }
 
-    // edge test cases
 
     @Test
     @DisplayName("Should return null when mapping null MemberCreateDto")

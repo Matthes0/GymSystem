@@ -7,8 +7,8 @@ import pl.matthes0.gym.gym.dtos.GymDetailsDto;
 @Component
 public class GymMapper {
 
-    public Gym toEntity(GymCreateDto gymCreateDto){
-        if (gymCreateDto == null){
+    public Gym toEntity(GymCreateDto gymCreateDto) {
+        if (gymCreateDto == null) {
             return null;
         }
         Gym gym = new Gym();
@@ -18,8 +18,8 @@ public class GymMapper {
         return gym;
     }
 
-    public GymDetailsDto toDetailsDto(Gym gym){
-        if (gym == null){
+    public GymDetailsDto toDetailsDto(Gym gym) {
+        if (gym == null) {
             return null;
         }
         return new GymDetailsDto(

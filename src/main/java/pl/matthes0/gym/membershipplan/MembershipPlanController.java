@@ -17,12 +17,13 @@ public class MembershipPlanController {
     private final MembershipPlanService membershipPlanService;
 
     @PostMapping
-    public ResponseEntity<MembershipPlanDetailsDto> createMembershipPlan(@PathVariable Long id, @Valid @RequestBody MembershipPlanCreateDto membershipPlanDto){
+    public ResponseEntity<MembershipPlanDetailsDto> createMembershipPlan(@PathVariable Long id, @Valid @RequestBody MembershipPlanCreateDto membershipPlanDto) {
         MembershipPlanDetailsDto createdMembershipPlan = membershipPlanService.createMembershipPlan(id, membershipPlanDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdMembershipPlan);
     }
+
     @GetMapping
-    public ResponseEntity<List<MembershipPlanDetailsDto>> getAllMembershipPlans(@PathVariable Long id){
+    public ResponseEntity<List<MembershipPlanDetailsDto>> getAllMembershipPlans(@PathVariable Long id) {
         List<MembershipPlanDetailsDto> allMembershipPlans = membershipPlanService.getAllMembershipPlans(id);
         return ResponseEntity.ok(allMembershipPlans);
     }

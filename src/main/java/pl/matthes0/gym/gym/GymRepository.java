@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface GymRepository extends JpaRepository<Gym, Long> {
 
-    @Query( "SELECT new pl.matthes0.gym.gym.dtos.RevenueReportDto(" +
+    @Query("SELECT new pl.matthes0.gym.gym.dtos.RevenueReportDto(" +
             "g.name, " +
             "new pl.matthes0.gym.membershipplan.Price(SUM(p.monthlyPrice.amount), p.monthlyPrice.currency))" +
             "FROM Gym g " +

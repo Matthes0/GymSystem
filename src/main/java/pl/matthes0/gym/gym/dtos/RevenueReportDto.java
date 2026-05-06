@@ -4,5 +4,5 @@ import pl.matthes0.gym.membershipplan.Price;
 
 public record RevenueReportDto(
         String gymName,
-        Price revenue){
+        Price revenue) {
 }

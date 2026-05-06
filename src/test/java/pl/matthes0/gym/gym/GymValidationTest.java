@@ -21,6 +21,7 @@ public class GymValidationTest {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
+
     @Test
     void shouldHaveViolationsWhenFieldIsBlank() {
         Gym gym = new Gym();
@@ -36,6 +37,7 @@ public class GymValidationTest {
         assertEquals(3, violations.size());
         assertTrue(invalidProperties.containsAll(List.of("name", "address", "phoneNumber")));
     }
+
     @Test
     void shouldHaveViolationsWhenFieldIsTooLong() {
         Gym gym = new Gym();

@@ -21,8 +21,9 @@ public class MemberMapper {
         member.setEmail(memberCreateDto.email());
         return member;
     }
-    public MemberDetailsDto toDetailsDto(Member member){
-        if (member == null){
+
+    public MemberDetailsDto toDetailsDto(Member member) {
+        if (member == null) {
             return null;
         }
         return new MemberDetailsDto(
@@ -34,6 +35,7 @@ public class MemberMapper {
                 membershipPlanMapper.toDetailsDto(member.getMembershipPlan())
         );
     }
+
     public MemberSimpleDto toSimpleDto(Member member) {
         if (member == null) {
             return null;

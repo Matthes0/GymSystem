@@ -34,15 +34,18 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<Map<String, String>> handleJsonErrors(HttpMessageNotReadableException ex) {
+    public ResponseEntity<Map<String, String>> handleJsonErrors() {
         Map<String, String> error = new HashMap<>();
-        error.put("message", "Invalid input format: " + ex.getMostSpecificCause().getMessage());
+        error.put("message", "Invalid JSON format or data type mismatch");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleAllExceptions(Exception ex) {
+        System.err.println("Unexpected error: " + ex.getMessage());
+        ex.printStackTrace();
         Map<String, String> error = new HashMap<>();
-        error.put("message", ex.getMessage());
+        error.put("message", "An unexpected error occurred");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 }

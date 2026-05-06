@@ -19,7 +19,7 @@ public class GymService {
     private final GymMapper gymMapper;
 
     @Transactional
-    public GymDetailsDto createGym(GymCreateDto gymDto){
+    public GymDetailsDto createGym(GymCreateDto gymDto) {
         if (gymRepository.existsByName(gymDto.name())) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
@@ -32,8 +32,8 @@ public class GymService {
         return gymMapper.toDetailsDto(savedGym);
 
     }
-    public List<GymDetailsDto> findAllGyms()
-    {
+
+    public List<GymDetailsDto> findAllGyms() {
         return gymRepository.findAll().stream()
                 .map(gymMapper::toDetailsDto)
                 .toList();

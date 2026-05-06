@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GymMapperTest {
     private final GymMapper mapper = new GymMapper();
-    // success test cases
+
     @Test
     @DisplayName("Should correctly map GymCreateDto to Gym entity")
     void shouldMapDtoToEntity() {
@@ -44,8 +44,6 @@ class GymMapperTest {
         assertEquals("Power Street 123-456 Lublin", result.address());
         assertEquals("111222333", result.phoneNumber());
     }
-
-    // edge test cases
 
     @Test
     @DisplayName("Should return null when mapping null GymCreateDto")

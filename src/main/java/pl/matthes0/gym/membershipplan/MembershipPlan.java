@@ -19,7 +19,7 @@ import pl.matthes0.gym.member.Member;
 import java.util.List;
 
 @Entity
-@Table(name="membership_plans")
+@Table(name = "membership_plans")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -31,7 +31,7 @@ public class MembershipPlan {
 
     @Column(nullable = false, length = 100)
     @NotBlank(message = "Name is required")
-    @Size(max=100, message = "Name is too long")
+    @Size(max = 100, message = "Name is too long")
     private String name;
 
     @Column(nullable = false)

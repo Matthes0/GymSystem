@@ -36,26 +36,26 @@ class MemberIntegrationTest {
                 .andExpect(status().isCreated())
                 .andReturn();
         String response = gymResult.getResponse().getContentAsString();
-        Long gymId = ((Number) com.jayway.jsonpath.JsonPath.read(response, "$.id")).longValue();
+        long gymId = ((Number) com.jayway.jsonpath.JsonPath.read(response, "$.id")).longValue();
         String planJson = """
-        {
-            "name": "Pro Plan",
-            "plan": "PREMIUM",
-            "monthlyPrice": {
-                "amount": 150.12,
-                "currency": "PLN"
-            },
-            "durationInMonths": 12,
-            "maxMembers": 100
-        }
-        """;
+                {
+                    "name": "Pro Plan",
+                    "plan": "PREMIUM",
+                    "monthlyPrice": {
+                        "amount": 150.12,
+                        "currency": "PLN"
+                    },
+                    "durationInMonths": 12,
+                    "maxMembers": 100
+                }
+                """;
 
         MvcResult planResult = mockMvc.perform(post("/api/gyms/" + gymId + "/membership-plans")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(planJson))
                 .andExpect(status().isCreated())
                 .andReturn();
-        Long planId = ((Number) com.jayway.jsonpath.JsonPath.read(planResult.getResponse().getContentAsString(), "$.id")).longValue();
+        long planId = ((Number) com.jayway.jsonpath.JsonPath.read(planResult.getResponse().getContentAsString(), "$.id")).longValue();
 
         String expectedDate = java.time.LocalDate.now().toString();
 
@@ -110,26 +110,26 @@ class MemberIntegrationTest {
                 .andExpect(status().isCreated())
                 .andReturn();
         String response = gymResult.getResponse().getContentAsString();
-        Long gymId = ((Number) com.jayway.jsonpath.JsonPath.read(response, "$.id")).longValue();
+        long gymId = ((Number) com.jayway.jsonpath.JsonPath.read(response, "$.id")).longValue();
         String planJson = """
-        {
-            "name": "Pro Plan",
-            "plan": "PREMIUM",
-            "monthlyPrice": {
-                "amount": 150.12,
-                "currency": "PLN"
-            },
-            "durationInMonths": 12,
-            "maxMembers": 100
-        }
-        """;
+                {
+                    "name": "Pro Plan",
+                    "plan": "PREMIUM",
+                    "monthlyPrice": {
+                        "amount": 150.12,
+                        "currency": "PLN"
+                    },
+                    "durationInMonths": 12,
+                    "maxMembers": 100
+                }
+                """;
 
         MvcResult planResult = mockMvc.perform(post("/api/gyms/" + gymId + "/membership-plans")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(planJson))
                 .andExpect(status().isCreated())
                 .andReturn();
-        Long planId = ((Number) com.jayway.jsonpath.JsonPath.read(planResult.getResponse().getContentAsString(), "$.id")).longValue();
+        long planId = ((Number) com.jayway.jsonpath.JsonPath.read(planResult.getResponse().getContentAsString(), "$.id")).longValue();
 
         MemberCreateDto memberDto = new MemberCreateDto("John Doe", "john.doe@example.com");
 
@@ -139,7 +139,7 @@ class MemberIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status").value("ACTIVE"))
                 .andReturn();
-        Long memberId = ((Number) com.jayway.jsonpath.JsonPath.read(memberResult.getResponse().getContentAsString(), "$.id")).longValue();
+        long memberId = ((Number) com.jayway.jsonpath.JsonPath.read(memberResult.getResponse().getContentAsString(), "$.id")).longValue();
 
         mockMvc.perform(patch("/api/members/" + memberId + "/cancel")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -153,6 +153,7 @@ class MemberIntegrationTest {
                 .andExpect(jsonPath("$[0].planName").value("Pro Plan"))
                 .andExpect(jsonPath("$[0].gymName").value("Power Gym"));
     }
+
     @Test
     void shouldAllowAddingNewMemberAfterAnotherOneCancelledWhenPlanWasFull() throws Exception {
         GymCreateDto gymDto = new GymCreateDto("Limit Gym", "Full Street 5", "999888777");
@@ -161,24 +162,24 @@ class MemberIntegrationTest {
                         .content(objectMapper.writeValueAsString(gymDto)))
                 .andExpect(status().isCreated())
                 .andReturn();
-        Long gymId = ((Number) com.jayway.jsonpath.JsonPath.read(gymResult.getResponse().getContentAsString(), "$.id")).longValue();
+        long gymId = ((Number) com.jayway.jsonpath.JsonPath.read(gymResult.getResponse().getContentAsString(), "$.id")).longValue();
 
         String planJson = """
-        {
-            "name": "Solo Plan",
-            "plan": "BASIC",
-            "monthlyPrice": { "amount": 50.00, "currency": "PLN" },
-            "durationInMonths": 1,
-            "maxMembers": 1
-        }
-        """;
+                {
+                    "name": "Solo Plan",
+                    "plan": "BASIC",
+                    "monthlyPrice": { "amount": 50.00, "currency": "PLN" },
+                    "durationInMonths": 1,
+                    "maxMembers": 1
+                }
+                """;
 
         MvcResult planResult = mockMvc.perform(post("/api/gyms/" + gymId + "/membership-plans")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(planJson))
                 .andExpect(status().isCreated())
                 .andReturn();
-        Long planId = ((Number) com.jayway.jsonpath.JsonPath.read(planResult.getResponse().getContentAsString(), "$.id")).longValue();
+        long planId = ((Number) com.jayway.jsonpath.JsonPath.read(planResult.getResponse().getContentAsString(), "$.id")).longValue();
 
         MemberCreateDto member1Dto = new MemberCreateDto("First Member", "first@test.com");
         MvcResult member1Result = mockMvc.perform(post("/api/membership-plans/" + planId + "/members")
@@ -186,7 +187,7 @@ class MemberIntegrationTest {
                         .content(objectMapper.writeValueAsString(member1Dto)))
                 .andExpect(status().isCreated())
                 .andReturn();
-        Long member1Id = ((Number) com.jayway.jsonpath.JsonPath.read(member1Result.getResponse().getContentAsString(), "$.id")).longValue();
+        long member1Id = ((Number) com.jayway.jsonpath.JsonPath.read(member1Result.getResponse().getContentAsString(), "$.id")).longValue();
 
         MemberCreateDto member2Dto = new MemberCreateDto("Second Member", "second@test.com");
         mockMvc.perform(post("/api/membership-plans/" + planId + "/members")

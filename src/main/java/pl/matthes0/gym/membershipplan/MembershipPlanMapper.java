@@ -2,7 +2,6 @@ package pl.matthes0.gym.membershipplan;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import pl.matthes0.gym.gym.Gym;
 import pl.matthes0.gym.gym.GymMapper;
 import pl.matthes0.gym.membershipplan.dtos.MembershipPlanCreateDto;
 import pl.matthes0.gym.membershipplan.dtos.MembershipPlanDetailsDto;
@@ -13,11 +12,10 @@ public class MembershipPlanMapper {
 
     private final GymMapper gymMapper;
 
-    public MembershipPlan toEntity(MembershipPlanCreateDto membershipPlanCreateDto){
-        if (membershipPlanCreateDto == null){
+    public MembershipPlan toEntity(MembershipPlanCreateDto membershipPlanCreateDto) {
+        if (membershipPlanCreateDto == null) {
             return null;
         }
-
         MembershipPlan membershipPlan = new MembershipPlan();
         membershipPlan.setName(membershipPlanCreateDto.name());
         membershipPlan.setPlan(membershipPlanCreateDto.plan());
@@ -28,7 +26,7 @@ public class MembershipPlanMapper {
         return membershipPlan;
     }
 
-    public MembershipPlanDetailsDto toDetailsDto(MembershipPlan membershipPlan){
+    public MembershipPlanDetailsDto toDetailsDto(MembershipPlan membershipPlan) {
         if (membershipPlan == null) {
             return null;
         }

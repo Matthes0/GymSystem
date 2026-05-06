@@ -10,7 +10,9 @@ Content-Type: application/json
   "address": "ul. Puławska 1, 00-001 Warszawa",
   "phoneNumber": "221112233"
 }
-> {% client.global.set("gym_id_1", response.body.id); %}
+> {%
+    client.global.set("gym_id_1", response.body.id);
+%}
 
 ### 2. Iron Gym
 POST {{baseUrl}}
@@ -21,7 +23,9 @@ Content-Type: application/json
   "address": "ul. Krakowska 5, 12-345 Kraków",
   "phoneNumber": "124445566"
 }
-> {% client.global.set("gym_id_2", response.body.id); %}
+> {%
+    client.global.set("gym_id_2", response.body.id);
+%}
 
 ### 3. FitLife Center
 POST {{baseUrl}}
@@ -32,7 +36,9 @@ Content-Type: application/json
   "address": "ul. Świdnicka 1, Wrocław",
   "phoneNumber": "717778899"
 }
-> {% client.global.set("gym_id_3", response.body.id); %}
+> {%
+    client.global.set("gym_id_3", response.body.id);
+%}
 
 ### 4. Puławy Gym
 POST {{baseUrl}}
@@ -43,7 +49,9 @@ Content-Type: application/json
   "address": "ul. Lubelska 123, 24-100 Puławy",
   "phoneNumber": "+48611231231"
 }
-> {% client.global.set("gym_id_4", response.body.id); %}
+> {%
+    client.global.set("gym_id_4", response.body.id);
+%}
 
 ### 5. Super Gym
 POST {{baseUrl}}
@@ -54,7 +62,9 @@ Content-Type: application/json
   "address": "ul. Długa 45/3, Lublin",
   "phoneNumber": "+48 123231231"
 }
-> {% client.global.set("gym_id_5", response.body.id); %}
+> {%
+    client.global.set("gym_id_5", response.body.id);
+%}
 
 ###  Get all gyms
 GET {{baseUrl}}

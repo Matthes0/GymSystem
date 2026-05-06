@@ -87,7 +87,9 @@ public class GymControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto)))
                 .andExpect(status().isBadRequest());
-    }    @Test
+    }
+
+    @Test
     void shouldReturn400WhenPhoneNumberIsBlank() throws Exception {
         GymCreateDto invalidDto = new GymCreateDto("Some name", "Address", "");
 
@@ -96,6 +98,7 @@ public class GymControllerTest {
                         .content(objectMapper.writeValueAsString(invalidDto)))
                 .andExpect(status().isBadRequest());
     }
+
     @Test
     void shouldReturn400WhenGymNameIsTooLong() throws Exception {
         GymCreateDto invalidDto = new GymCreateDto("a".repeat(101), "Address", "123456789");
@@ -105,6 +108,7 @@ public class GymControllerTest {
                         .content(objectMapper.writeValueAsString(invalidDto)))
                 .andExpect(status().isBadRequest());
     }
+
     @Test
     void shouldReturn400WhenAddressIsTooLong() throws Exception {
         GymCreateDto invalidDto = new GymCreateDto("Some name", "a".repeat(256), "123456789");
@@ -114,6 +118,7 @@ public class GymControllerTest {
                         .content(objectMapper.writeValueAsString(invalidDto)))
                 .andExpect(status().isBadRequest());
     }
+
     @Test
     void shouldReturn400WhenPhoneNumberIsTooLong() throws Exception {
         GymCreateDto invalidDto = new GymCreateDto("Some name", "Address", "1".repeat(25));

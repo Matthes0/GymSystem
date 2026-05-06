@@ -56,6 +56,7 @@ class GymIntegrationTest {
                 .andExpect(jsonPath("$[1].address").value("Street 321"))
                 .andExpect(jsonPath("$[1].phoneNumber").value("987654321"));
     }
+
     @Test
     void shouldCalculateRevenueCorrectyForMultipleGymsAndCurrencies() throws Exception {
         GymCreateDto gym1Dto = new GymCreateDto("Big Muscle Gym", "Main St 1", "111");
@@ -92,6 +93,7 @@ class GymIntegrationTest {
                 .andExpect(jsonPath("$[?(@.gymName == 'Big Muscle Gym' && @.revenue.currency == 'EUR')].revenue.amount").value(20.99))
                 .andExpect(jsonPath("$[?(@.gymName == 'Empty Gym')]").isEmpty());
     }
+
     @Test
     void shouldExcludeCancelledMembersFromRevenue() throws Exception {
         GymCreateDto gymDto = new GymCreateDto("Calculated Gym", "Test Street", "000");
@@ -115,15 +117,16 @@ class GymIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[?(@.gymName == 'Calculated Gym' && @.revenue.currency == 'PLN')].revenue.amount").value(100.49));
     }
+
     private Long createPlan(Long gymId, String currency, double amount, String type) throws Exception {
         String json = """
-        {
-            "name": "Plan %s",
-            "plan": "%s",
-            "monthlyPrice": { "amount": %s, "currency": "%s" },
-            "durationInMonths": 1, "maxMembers": 100
-        }
-        """.formatted(type, type, amount, currency);
+                {
+                    "name": "Plan %s",
+                    "plan": "%s",
+                    "monthlyPrice": { "amount": %s, "currency": "%s" },
+                    "durationInMonths": 1, "maxMembers": 100
+                }
+                """.formatted(type, type, amount, currency);
 
         MvcResult res = mockMvc.perform(post("/api/gyms/" + gymId + "/membership-plans")
                 .contentType(MediaType.APPLICATION_JSON).content(json)).andReturn();
@@ -132,8 +135,8 @@ class GymIntegrationTest {
 
     private Long registerMember(Long planId, String name, String email) throws Exception {
         String json = """
-        { "fullName": "%s", "email": "%s" }
-        """.formatted(name, email);
+                { "fullName": "%s", "email": "%s" }
+                """.formatted(name, email);
         MvcResult res = mockMvc.perform(post("/api/membership-plans/" + planId + "/members")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))

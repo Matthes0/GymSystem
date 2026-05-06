@@ -10,6 +10,7 @@ import pl.matthes0.gym.member.dtos.MemberDetailsDto;
 import pl.matthes0.gym.member.dtos.MemberSimpleDto;
 import pl.matthes0.gym.membershipplan.MembershipPlan;
 import pl.matthes0.gym.membershipplan.MembershipPlanRepository;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class MemberService {
         MembershipPlan membershipPlan = membershipPlanRepository.findById(membershipPlanId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Membership plan with id " + membershipPlanId + " not found"));
         long activeMembersCount = memberRepository.countByMembershipPlanIdAndStatus(membershipPlanId, Status.ACTIVE);
-        if (activeMembersCount >= membershipPlan.getMaxMembers()){
+        if (activeMembersCount >= membershipPlan.getMaxMembers()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This membership plan is already full");
         }
 
@@ -43,6 +44,7 @@ public class MemberService {
                 .map(memberMapper::toSimpleDto)
                 .toList();
     }
+
     @Transactional
     public MemberDetailsDto cancelMembership(Long id) {
         Member member = memberRepository.findById(id)

@@ -15,7 +15,7 @@ import pl.matthes0.gym.membershipplan.MembershipPlan;
 import java.time.LocalDate;
 
 @Entity
-@Table(name="members")
+@Table(name = "members")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

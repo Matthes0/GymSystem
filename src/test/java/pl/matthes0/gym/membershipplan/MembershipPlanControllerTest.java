@@ -121,6 +121,7 @@ class MembershipPlanControllerTest {
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest());
     }
+
     @Test
     void shouldReturn400WhenAmountIsNegative() throws Exception {
         Price minusPrice = new Price(new BigDecimal("-1"), Currency.getInstance("PLN"));
@@ -131,6 +132,7 @@ class MembershipPlanControllerTest {
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest());
     }
+
     @Test
     void shouldReturn400WhenAmountIsTooLong() throws Exception {
         Price longPrice = new Price(new BigDecimal("100000000"), Currency.getInstance("PLN"));
@@ -141,6 +143,7 @@ class MembershipPlanControllerTest {
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest());
     }
+
     @Test
     void shouldReturn400WhenAmountIsZero() throws Exception {
         Price zeroPrice = new Price(new BigDecimal("0"), Currency.getInstance("PLN"));
@@ -151,6 +154,7 @@ class MembershipPlanControllerTest {
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest());
     }
+
     @Test
     void shouldAcceptWholeNumberAmount() throws Exception {
         Price price = new Price(new BigDecimal("16"), Currency.getInstance("USD"));
@@ -163,20 +167,21 @@ class MembershipPlanControllerTest {
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isCreated());
     }
+
     @Test
     void shouldReturn400WhenBadCurrencyFormat() throws Exception {
         String jsonWithInvalidCurrency = """
-            {
-                "name": "Standard Plan",
-                "plan": "BASIC",
-                "monthlyPrice": {
-                    "amount": 100.00,
-                    "currency": "EURO"
-                },
-                "durationInMonths": 1,
-                "maxMembers": 50
-            }
-            """;
+                {
+                    "name": "Standard Plan",
+                    "plan": "BASIC",
+                    "monthlyPrice": {
+                        "amount": 100.00,
+                        "currency": "EURO"
+                    },
+                    "durationInMonths": 1,
+                    "maxMembers": 50
+                }
+                """;
 
         mockMvc.perform(post("/api/gyms/1/membership-plans")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -223,19 +228,19 @@ class MembershipPlanControllerTest {
     @Test
     void shouldReturn400WhenDurationHasWrongType() throws Exception {
         String jsonWithInvalidType = """
-            {
-                "name": "Pro Plan",
-                "plan": "BASIC",
-                "monthlyPrice": {
-                    "amount": 100.00,
-                    "currency": "PLN"
-                },
-                "durationInMonths": "twelve",
-                "maxMembers": 50
-            }
-            """;
+                {
+                    "name": "Pro Plan",
+                    "plan": "BASIC",
+                    "monthlyPrice": {
+                        "amount": 100.00,
+                        "currency": "PLN"
+                    },
+                    "durationInMonths": "twelve",
+                    "maxMembers": 50
+                }
+                """;
         mockMvc.perform(post("/api/gyms/1/membership-plans")
-                .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonWithInvalidType))
                 .andExpect(status().isBadRequest());
     }
@@ -243,23 +248,24 @@ class MembershipPlanControllerTest {
     @Test
     void shouldReturn400WhenPlanEnumIsInvalid() throws Exception {
         String jsonWithInvalidEnum = """
-            {
-                "name": "Pro Plan",
-                "plan": "ULTRA",
-                "monthlyPrice": {
-                    "amount": 100.00,
-                    "currency": "PLN"
-                },
-                "durationInMonths": 12,
-                "maxMembers": 50
-            }
-            """;
+                {
+                    "name": "Pro Plan",
+                    "plan": "ULTRA",
+                    "monthlyPrice": {
+                        "amount": 100.00,
+                        "currency": "PLN"
+                    },
+                    "durationInMonths": 12,
+                    "maxMembers": 50
+                }
+                """;
 
         mockMvc.perform(post("/api/gyms/1/membership-plans")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonWithInvalidEnum))
                 .andExpect(status().isBadRequest());
     }
+
     @Test
     void shouldReturn404WhenGettingPlansForNonExistentGym() throws Exception {
         Long nonExistentGymId = 999L;
@@ -269,6 +275,7 @@ class MembershipPlanControllerTest {
         mockMvc.perform(get("/api/gyms/" + nonExistentGymId + "/membership-plans"))
                 .andExpect(status().isNotFound());
     }
+
     @Test
     void shouldReturn404WhenCreatingPlanForNonExistentGym() throws Exception {
         Long nonExistentGymId = 999L;
@@ -284,6 +291,7 @@ class MembershipPlanControllerTest {
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isNotFound());
     }
+
     private void performPostAndExpect400(MembershipPlanCreateDto dto) throws Exception {
         mockMvc.perform(post("/api/gyms/1/membership-plans")
                         .contentType(MediaType.APPLICATION_JSON)
