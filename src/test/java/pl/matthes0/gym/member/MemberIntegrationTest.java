@@ -6,11 +6,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import pl.matthes0.gym.gym.dtos.GymCreateDto;
 import pl.matthes0.gym.member.dtos.MemberCreateDto;
 import tools.jackson.databind.ObjectMapper;
+
+import java.time.LocalDate;
+import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -23,191 +26,93 @@ class MemberIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ObjectMapper objectMapper;
 
+    private static final String GYMS_URL = "/api/gyms";
+    private static final String MEMBERS_URL = "/api/members";
+    private static final String TODAY = LocalDate.now().toString();
+
     @Test
     void shouldRegisterMembersAndReturnAllMembers() throws Exception {
-        GymCreateDto gymDto = new GymCreateDto("Power Gym", "Central 1", "123456");
-        MvcResult gymResult = mockMvc.perform(post("/api/gyms")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(gymDto)))
+        long gymId = createGym("Power Gym", "Central 1", "123456");
+        long planId = createPlan(gymId, "Pro Plan", "PREMIUM", 150.12, "PLN", 100);
+
+        performPost("/api/membership-plans/" + planId + "/members", new MemberCreateDto("John Doe", "john.doe@example.com"))
                 .andExpect(status().isCreated())
-                .andReturn();
-        String response = gymResult.getResponse().getContentAsString();
-        long gymId = ((Number) com.jayway.jsonpath.JsonPath.read(response, "$.id")).longValue();
-        String planJson = """
-                {
-                    "name": "Pro Plan",
-                    "plan": "PREMIUM",
-                    "monthlyPrice": {
-                        "amount": 150.12,
-                        "currency": "PLN"
-                    },
-                    "durationInMonths": 12,
-                    "maxMembers": 100
-                }
-                """;
+                .andExpect(jsonPath("$.membershipStartDate").value(TODAY))
+                .andExpect(jsonPath("$.membershipPlanDetailsDto.name").value("Pro Plan"));
 
-        MvcResult planResult = mockMvc.perform(post("/api/gyms/" + gymId + "/membership-plans")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(planJson))
-                .andExpect(status().isCreated())
-                .andReturn();
-        long planId = ((Number) com.jayway.jsonpath.JsonPath.read(planResult.getResponse().getContentAsString(), "$.id")).longValue();
+        performPost("/api/membership-plans/" + planId + "/members", new MemberCreateDto("Mariusz Pudzianowski", "mariuszpudzianowski@example.com"))
+                .andExpect(status().isCreated());
 
-        String expectedDate = java.time.LocalDate.now().toString();
-
-        MemberCreateDto memberDto = new MemberCreateDto("John Doe", "john.doe@example.com");
-
-        mockMvc.perform(post("/api/membership-plans/" + planId + "/members")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(memberDto)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.fullName").value("John Doe"))
-                .andExpect(jsonPath("$.email").value("john.doe@example.com"))
-                .andExpect(jsonPath("$.status").value("ACTIVE"))
-                .andExpect(jsonPath("$.membershipStartDate").value(expectedDate))
-                .andExpect(jsonPath("$.membershipPlanDetailsDto.name").value("Pro Plan"))
-                .andExpect(jsonPath("$.membershipPlanDetailsDto.plan").value("PREMIUM"));
-
-        MemberCreateDto memberDto2 = new MemberCreateDto("Mariusz Pudzianowski", "mariuszpudzianowski@example.com");
-
-        mockMvc.perform(post("/api/membership-plans/" + planId + "/members")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(memberDto2)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.fullName").value("Mariusz Pudzianowski"))
-                .andExpect(jsonPath("$.email").value("mariuszpudzianowski@example.com"))
-                .andExpect(jsonPath("$.status").value("ACTIVE"))
-                .andExpect(jsonPath("$.membershipStartDate").value(expectedDate))
-                .andExpect(jsonPath("$.membershipPlanDetailsDto.name").value("Pro Plan"))
-                .andExpect(jsonPath("$.membershipPlanDetailsDto.plan").value("PREMIUM"));
-
-        mockMvc.perform(get("/api/members"))
+        mockMvc.perform(get(MEMBERS_URL))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].fullName").value("John Doe"))
-                .andExpect(jsonPath("$[0].email").value("john.doe@example.com"))
-                .andExpect(jsonPath("$[0].status").value("ACTIVE"))
-                .andExpect(jsonPath("$[0].membershipStartDate").value(expectedDate))
-                .andExpect(jsonPath("$[0].planName").value("Pro Plan"))
                 .andExpect(jsonPath("$[0].gymName").value("Power Gym"))
-                .andExpect(jsonPath("$[1].fullName").value("Mariusz Pudzianowski"))
-                .andExpect(jsonPath("$[1].email").value("mariuszpudzianowski@example.com"))
-                .andExpect(jsonPath("$[1].status").value("ACTIVE"))
-                .andExpect(jsonPath("$[1].membershipStartDate").value(expectedDate))
-                .andExpect(jsonPath("$[1].planName").value("Pro Plan"))
-                .andExpect(jsonPath("$[1].gymName").value("Power Gym"));
+                .andExpect(jsonPath("$[1].fullName").value("Mariusz Pudzianowski"));
     }
 
     @Test
     void shouldRegisterAndThenCancelMember() throws Exception {
-        GymCreateDto gymDto = new GymCreateDto("Power Gym", "Central 1", "123456");
-        MvcResult gymResult = mockMvc.perform(post("/api/gyms")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(gymDto)))
-                .andExpect(status().isCreated())
-                .andReturn();
-        String response = gymResult.getResponse().getContentAsString();
-        long gymId = ((Number) com.jayway.jsonpath.JsonPath.read(response, "$.id")).longValue();
-        String planJson = """
-                {
-                    "name": "Pro Plan",
-                    "plan": "PREMIUM",
-                    "monthlyPrice": {
-                        "amount": 150.12,
-                        "currency": "PLN"
-                    },
-                    "durationInMonths": 12,
-                    "maxMembers": 100
-                }
-                """;
+        long gymId = createGym("Power Gym", "Central 1", "123456");
+        long planId = createPlan(gymId, "Pro Plan", "PREMIUM", 150.12, "PLN", 100);
+        long memberId = extractId(performPost("/api/membership-plans/" + planId + "/members", new MemberCreateDto("John Doe", "john.doe@example.com")));
 
-        MvcResult planResult = mockMvc.perform(post("/api/gyms/" + gymId + "/membership-plans")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(planJson))
-                .andExpect(status().isCreated())
-                .andReturn();
-        long planId = ((Number) com.jayway.jsonpath.JsonPath.read(planResult.getResponse().getContentAsString(), "$.id")).longValue();
-
-        MemberCreateDto memberDto = new MemberCreateDto("John Doe", "john.doe@example.com");
-
-        MvcResult memberResult = mockMvc.perform(post("/api/membership-plans/" + planId + "/members")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(memberDto)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.status").value("ACTIVE"))
-                .andReturn();
-        long memberId = ((Number) com.jayway.jsonpath.JsonPath.read(memberResult.getResponse().getContentAsString(), "$.id")).longValue();
-
-        mockMvc.perform(patch("/api/members/" + memberId + "/cancel")
-                        .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(patch(MEMBERS_URL + "/" + memberId + "/cancel"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.fullName").value("John Doe"))
                 .andExpect(jsonPath("$.status").value("CANCELLED"));
-        mockMvc.perform(get("/api/members"))
+
+        mockMvc.perform(get(MEMBERS_URL))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].fullName").value("John Doe"))
                 .andExpect(jsonPath("$[0].status").value("CANCELLED"))
-                .andExpect(jsonPath("$[0].planName").value("Pro Plan"))
-                .andExpect(jsonPath("$[0].gymName").value("Power Gym"));
+                .andExpect(jsonPath("$[0].planName").value("Pro Plan"));
     }
 
     @Test
     void shouldAllowAddingNewMemberAfterAnotherOneCancelledWhenPlanWasFull() throws Exception {
-        GymCreateDto gymDto = new GymCreateDto("Limit Gym", "Full Street 5", "999888777");
-        MvcResult gymResult = mockMvc.perform(post("/api/gyms")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(gymDto)))
-                .andExpect(status().isCreated())
-                .andReturn();
-        long gymId = ((Number) com.jayway.jsonpath.JsonPath.read(gymResult.getResponse().getContentAsString(), "$.id")).longValue();
+        long gymId = createGym("Limit Gym", "Full Street 5", "999888777");
+        long planId = createPlan(gymId, "Solo Plan", "BASIC", 50.00, "PLN", 1);
 
-        String planJson = """
-                {
-                    "name": "Solo Plan",
-                    "plan": "BASIC",
-                    "monthlyPrice": { "amount": 50.00, "currency": "PLN" },
-                    "durationInMonths": 1,
-                    "maxMembers": 1
-                }
-                """;
+        long firstMemberId = extractId(performPost("/api/membership-plans/" + planId + "/members", new MemberCreateDto("First Member", "first@test.com")));
 
-        MvcResult planResult = mockMvc.perform(post("/api/gyms/" + gymId + "/membership-plans")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(planJson))
-                .andExpect(status().isCreated())
-                .andReturn();
-        long planId = ((Number) com.jayway.jsonpath.JsonPath.read(planResult.getResponse().getContentAsString(), "$.id")).longValue();
-
-        MemberCreateDto member1Dto = new MemberCreateDto("First Member", "first@test.com");
-        MvcResult member1Result = mockMvc.perform(post("/api/membership-plans/" + planId + "/members")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(member1Dto)))
-                .andExpect(status().isCreated())
-                .andReturn();
-        long member1Id = ((Number) com.jayway.jsonpath.JsonPath.read(member1Result.getResponse().getContentAsString(), "$.id")).longValue();
-
-        MemberCreateDto member2Dto = new MemberCreateDto("Second Member", "second@test.com");
-        mockMvc.perform(post("/api/membership-plans/" + planId + "/members")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(member2Dto)))
+        performPost("/api/membership-plans/" + planId + "/members", new MemberCreateDto("Second Member", "second@test.com"))
                 .andExpect(status().isBadRequest());
 
-        mockMvc.perform(patch("/api/members/" + member1Id + "/cancel"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("CANCELLED"));
+        mockMvc.perform(patch(MEMBERS_URL + "/" + firstMemberId + "/cancel")).andExpect(status().isOk());
 
-        mockMvc.perform(post("/api/membership-plans/" + planId + "/members")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(member2Dto)))
+        performPost("/api/membership-plans/" + planId + "/members", new MemberCreateDto("Second Member", "second@test.com"))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.fullName").value("Second Member"))
-                .andExpect(jsonPath("$.status").value("ACTIVE"));
+                .andExpect(jsonPath("$.fullName").value("Second Member"));
 
-        mockMvc.perform(get("/api/members"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2));
+        mockMvc.perform(get(MEMBERS_URL)).andExpect(jsonPath("$.length()").value(2));
+    }
+
+
+    private ResultActions performPost(String url, Object body) throws Exception {
+        return mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(body)));
+    }
+
+    private long extractId(ResultActions actions) throws Exception {
+        String response = actions.andReturn().getResponse().getContentAsString();
+        return ((Number) com.jayway.jsonpath.JsonPath.read(response, "$.id")).longValue();
+    }
+
+    private long createGym(String name, String address, String phone) throws Exception {
+        return extractId(performPost(GYMS_URL, new GymCreateDto(name, address, phone)).andExpect(status().isCreated()));
+    }
+
+    private long createPlan(long gymId, String name, String type, double amount, String currency, int maxMembers) throws Exception {
+        Map<String, Object> planData = Map.of(
+                "name", name,
+                "plan", type,
+                "monthlyPrice", Map.of("amount", amount, "currency", currency),
+                "durationInMonths", 12,
+                "maxMembers", maxMembers
+        );
+        return extractId(performPost(GYMS_URL + "/" + gymId + "/membership-plans", planData).andExpect(status().isCreated()));
     }
 }

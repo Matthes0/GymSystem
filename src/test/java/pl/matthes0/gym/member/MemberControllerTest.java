@@ -1,12 +1,15 @@
 package pl.matthes0.gym.member;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.server.ResponseStatusException;
 import pl.matthes0.gym.member.dtos.MemberCreateDto;
 import pl.matthes0.gym.member.dtos.MemberDetailsDto;
@@ -14,6 +17,7 @@ import pl.matthes0.gym.member.dtos.MemberSimpleDto;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -27,38 +31,36 @@ class MemberControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ObjectMapper objectMapper;
-
     @MockitoBean
     private MemberService memberService;
 
+    private static final Long PLAN_ID = 1L;
+    private static final Long MEMBER_ID = 10L;
+    private static final String NAME = "John Doe";
+    private static final String EMAIL = "john.doe@example.com";
+
     @Test
     void shouldRegisterMemberSuccessfully() throws Exception {
-        Long planId = 1L;
-        MemberCreateDto createDto = new MemberCreateDto("John Doe", "john.doe@example.com");
-        MemberDetailsDto expectedDto = new MemberDetailsDto(10L, "John Doe", "john.doe@example.com", null, Status.ACTIVE, null);
+        MemberCreateDto createDto = new MemberCreateDto(NAME, EMAIL);
+        MemberDetailsDto expectedDto = new MemberDetailsDto(MEMBER_ID, NAME, EMAIL, null, Status.ACTIVE, null);
 
-        when(memberService.registerNewMember(eq(planId), any(MemberCreateDto.class))).thenReturn(expectedDto);
+        when(memberService.registerNewMember(eq(PLAN_ID), any())).thenReturn(expectedDto);
 
-        mockMvc.perform(post("/api/membership-plans/" + planId + "/members")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createDto)))
+        performPost(PLAN_ID, createDto)
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(10))
-                .andExpect(jsonPath("$.fullName").value("John Doe"))
+                .andExpect(jsonPath("$.id").value(MEMBER_ID))
+                .andExpect(jsonPath("$.fullName").value(NAME))
                 .andExpect(jsonPath("$.status").value("ACTIVE"));
     }
 
     @Test
     void shouldReturnAllMembers() throws Exception {
-        List<MemberSimpleDto> members = List.of(
+        when(memberService.getAllMembers()).thenReturn(List.of(
                 new MemberSimpleDto(1L, "Member A", "a@test.com", null, Status.ACTIVE, "Plan A", "Gym A"),
                 new MemberSimpleDto(2L, "Member B", "b@test.com", null, Status.CANCELLED, "Plan B", "Gym B")
-        );
-
-        when(memberService.getAllMembers()).thenReturn(members);
+        ));
 
         mockMvc.perform(get("/api/members"))
                 .andExpect(status().isOk())
@@ -69,73 +71,60 @@ class MemberControllerTest {
 
     @Test
     void shouldCancelMembershipSuccessfully() throws Exception {
-        Long memberId = 1L;
-        MemberDetailsDto cancelledDto = new MemberDetailsDto(memberId, "John Doe", "john@test.com", null, Status.CANCELLED, null);
+        MemberDetailsDto cancelledDto = new MemberDetailsDto(MEMBER_ID, NAME, EMAIL, null, Status.CANCELLED, null);
+        when(memberService.cancelMembership(MEMBER_ID)).thenReturn(cancelledDto);
 
-        when(memberService.cancelMembership(memberId)).thenReturn(cancelledDto);
-
-        mockMvc.perform(patch("/api/members/" + memberId + "/cancel"))
+        mockMvc.perform(patch("/api/members/{id}/cancel", MEMBER_ID))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("CANCELLED"))
-                .andExpect(jsonPath("$.fullName").value("John Doe"));
+                .andExpect(jsonPath("$.fullName").value(NAME));
     }
 
-    @Test
-    void shouldReturn400WhenNameIsBlank() throws Exception {
-        MemberCreateDto invalidDto = new MemberCreateDto("", "email@test.com");
-        performPostAndExpect400(invalidDto);
-    }
-
-    @Test
-    void shouldReturn400WhenEmailIsInvalid() throws Exception {
-        MemberCreateDto invalidDto = new MemberCreateDto("John Doe", "not-an-email");
-        performPostAndExpect400(invalidDto);
-    }
-
-    @Test
-    void shouldReturn400WhenNameIsTooLong() throws Exception {
-        MemberCreateDto invalidDto = new MemberCreateDto("a".repeat(101), "email@test.com");
-        performPostAndExpect400(invalidDto);
+    @ParameterizedTest
+    @MethodSource("invalidMemberProvider")
+    void shouldReturn400ForInvalidData(MemberCreateDto invalidDto) throws Exception {
+        performPost(PLAN_ID, invalidDto).andExpect(status().isBadRequest());
     }
 
     @Test
     void shouldReturn404WhenPlanNotFound() throws Exception {
-        Long planId = 999L;
-        when(memberService.registerNewMember(eq(planId), any()))
+        when(memberService.registerNewMember(eq(PLAN_ID), any()))
                 .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Plan not found"));
 
-        mockMvc.perform(post("/api/membership-plans/" + planId + "/members")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new MemberCreateDto("Name", "test@test.com"))))
+        performPost(PLAN_ID, new MemberCreateDto(NAME, EMAIL))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void shouldReturn400WhenPlanIsFull() throws Exception {
-        Long planId = 1L;
-        when(memberService.registerNewMember(eq(planId), any()))
+        when(memberService.registerNewMember(eq(PLAN_ID), any()))
                 .thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Plan is full"));
 
-        mockMvc.perform(post("/api/membership-plans/" + planId + "/members")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new MemberCreateDto("Name", "test@test.com"))))
+        performPost(PLAN_ID, new MemberCreateDto(NAME, EMAIL))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void shouldReturn404WhenMemberToCancelNotFound() throws Exception {
-        Long memberId = 999L;
-        when(memberService.cancelMembership(memberId))
+        when(memberService.cancelMembership(MEMBER_ID))
                 .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Member not found"));
 
-        mockMvc.perform(patch("/api/members/" + memberId + "/cancel"))
+        mockMvc.perform(patch("/api/members/{id}/cancel", MEMBER_ID))
                 .andExpect(status().isNotFound());
     }
 
-    private void performPostAndExpect400(MemberCreateDto dto) throws Exception {
-        mockMvc.perform(post("/api/membership-plans/1/members")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isBadRequest());
+
+    private ResultActions performPost(Long planId, Object dto) throws Exception {
+        return mockMvc.perform(post("/api/membership-plans/{id}/members", planId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)));
+    }
+
+    private static Stream<MemberCreateDto> invalidMemberProvider() {
+        return Stream.of(
+                new MemberCreateDto("", EMAIL),
+                new MemberCreateDto(NAME, "not-an-email"),
+                new MemberCreateDto("a".repeat(101), EMAIL)
+        );
     }
 }

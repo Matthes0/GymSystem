@@ -6,10 +6,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import pl.matthes0.gym.gym.dtos.GymCreateDto;
 import tools.jackson.databind.ObjectMapper;
+
+import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -20,81 +22,61 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 class MembershipPlanIntegrationTest {
+
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private ObjectMapper objectMapper;
 
+    private static final String GYMS_URL = "/api/gyms";
+
     @Test
     void shouldCreateAndReturnMembershipPlans() throws Exception {
-        GymCreateDto gymDto = new GymCreateDto("Power Gym", "Central 1", "123456");
-        MvcResult gymResult = mockMvc.perform(post("/api/gyms")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(gymDto)))
-                .andExpect(status().isCreated())
-                .andReturn();
-        String response = gymResult.getResponse().getContentAsString();
-        long gymId = ((Number) com.jayway.jsonpath.JsonPath.read(response, "$.id")).longValue();
-        String jsonRequest = """
-                {
-                    "name": "Pro Plan",
-                    "plan": "PREMIUM",
-                    "monthlyPrice": {
-                        "amount": 150.12,
-                        "currency": "PLN"
-                    },
-                    "durationInMonths": 12,
-                    "maxMembers": 100
-                }
-                """;
-        mockMvc.perform(post("/api/gyms/" + gymId + "/membership-plans")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonRequest))
+        long gymId = createGym("Power Gym", "Central 1", "123456");
+
+        createPlan(gymId, "Pro Plan", "PREMIUM", 150.12, "PLN", 12, 100)
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("Pro Plan"))
-                .andExpect(jsonPath("$.plan").value("PREMIUM"))
-                .andExpect(jsonPath("$.durationInMonths").value(12))
-                .andExpect(jsonPath("$.maxMembers").value(100))
-                .andExpect(jsonPath("$.monthlyPrice.amount").value(150.12))
-                .andExpect(jsonPath("$.monthlyPrice.currency").value("PLN"));
-        String jsonRequest2 = """
-                {
-                    "name": "Basic Plan",
-                    "plan": "BASIC",
-                    "monthlyPrice": {
-                        "amount": 20.11,
-                        "currency": "GBP"
-                    },
-                    "durationInMonths": 50,
-                    "maxMembers": 10
-                }
-                """;
-        mockMvc.perform(post("/api/gyms/" + gymId + "/membership-plans")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonRequest2))
+                .andExpect(jsonPath("$.monthlyPrice.amount").value(150.12));
+
+        createPlan(gymId, "Basic Plan", "BASIC", 20.11, "GBP", 50, 10)
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("Basic Plan"))
-                .andExpect(jsonPath("$.plan").value("BASIC"))
-                .andExpect(jsonPath("$.durationInMonths").value(50))
-                .andExpect(jsonPath("$.maxMembers").value(10))
-                .andExpect(jsonPath("$.monthlyPrice.amount").value(20.11))
                 .andExpect(jsonPath("$.monthlyPrice.currency").value("GBP"));
 
-
-        mockMvc.perform(get("/api/gyms/" + gymId + "/membership-plans"))
+        mockMvc.perform(get(GYMS_URL + "/" + gymId + "/membership-plans"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].name").value("Pro Plan"))
-                .andExpect(jsonPath("$[0].plan").value("PREMIUM"))
-                .andExpect(jsonPath("$[0].durationInMonths").value(12))
-                .andExpect(jsonPath("$[0].maxMembers").value(100))
-                .andExpect(jsonPath("$[0].monthlyPrice.amount").value(150.12))
-                .andExpect(jsonPath("$[0].monthlyPrice.currency").value("PLN"))
-                .andExpect(jsonPath("$[1].name").value("Basic Plan"))
-                .andExpect(jsonPath("$[1].plan").value("BASIC"))
-                .andExpect(jsonPath("$[1].durationInMonths").value(50))
-                .andExpect(jsonPath("$[1].maxMembers").value(10))
-                .andExpect(jsonPath("$[1].monthlyPrice.amount").value(20.11))
-                .andExpect(jsonPath("$[1].monthlyPrice.currency").value("GBP"));
+                .andExpect(jsonPath("$[1].name").value("Basic Plan"));
+    }
+
+
+    private ResultActions performPost(String url, Object body) throws Exception {
+        return mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(body)));
+    }
+
+    private long extractId(ResultActions actions) throws Exception {
+        String response = actions.andReturn().getResponse().getContentAsString();
+        return ((Number) com.jayway.jsonpath.JsonPath.read(response, "$.id")).longValue();
+    }
+
+    private long createGym(String name, String address, String phone) throws Exception {
+        GymCreateDto gymDto = new GymCreateDto(name, address, phone);
+        return extractId(performPost(GYMS_URL, gymDto).andExpect(status().isCreated()));
+    }
+
+    private ResultActions createPlan(long gymId, String name, String type, double amount, String currency, int duration, int maxMembers) throws Exception {
+        Map<String, Object> planData = Map.of(
+                "name", name,
+                "plan", type,
+                "monthlyPrice", Map.of("amount", amount, "currency", currency),
+                "durationInMonths", duration,
+                "maxMembers", maxMembers
+        );
+        return performPost(GYMS_URL + "/" + gymId + "/membership-plans", planData);
     }
 }

@@ -22,24 +22,30 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class GymServiceTest {
-    @Mock
-    private GymRepository repository;
-    @Mock
-    private GymMapper mapper;
-    @InjectMocks
-    private GymService service;
+
+    @Mock private GymRepository repository;
+    @Mock private GymMapper mapper;
+    @InjectMocks private GymService service;
+
+    private static final String NAME = "Iron Paradise";
+    private static final String ADDRESS = "Miami";
+    private static final String PHONE = "123456789";
 
     @Test
     void shouldCreateGymSuccessfully() {
-        GymCreateDto dto = new GymCreateDto("Iron Paradise", "Miami", "123456789");
+        GymCreateDto dto = new GymCreateDto(NAME, ADDRESS, PHONE);
         Gym gym = new Gym();
         Gym savedGym = new Gym();
         savedGym.setId(1L);
-        GymDetailsDto expectedDto = new GymDetailsDto(1L, "Iron Paradise", "Miami", "123456789");
+        GymDetailsDto expectedDto = new GymDetailsDto(1L, NAME, ADDRESS, PHONE);
+
+        when(repository.existsByName(NAME)).thenReturn(false);
         when(mapper.toEntity(dto)).thenReturn(gym);
         when(repository.save(gym)).thenReturn(savedGym);
         when(mapper.toDetailsDto(savedGym)).thenReturn(expectedDto);
+
         GymDetailsDto result = service.createGym(dto);
+
         assertEquals(expectedDto, result);
         verify(repository).save(gym);
     }
@@ -47,39 +53,53 @@ class GymServiceTest {
     @Test
     void shouldReturnAllGyms() {
         Gym gym = new Gym();
+        GymDetailsDto detailsDto = new GymDetailsDto(1L, NAME, ADDRESS, PHONE);
+
         when(repository.findAll()).thenReturn(List.of(gym));
-        when(mapper.toDetailsDto(gym)).thenReturn(new GymDetailsDto(1L, "Gym", "Addr", "123456789"));
+        when(mapper.toDetailsDto(gym)).thenReturn(detailsDto);
+
         List<GymDetailsDto> result = service.findAllGyms();
-        assertEquals(1, result.size());
-        verify(repository, times(1)).findAll();
+
+        assertAll("Find all gyms",
+                () -> assertEquals(1, result.size()),
+                () -> assertEquals(detailsDto, result.get(0))
+        );
+        verify(repository).findAll();
     }
 
     @Test
-    void shouldThrowConflictExceptionWhenCreatingGymWithExistingName() {
-        String gymName = "Iron Paradise";
-        GymCreateDto dto = new GymCreateDto(gymName, "Miami", "123456789");
-        when(repository.existsByName(gymName)).thenReturn(true);
+    void shouldThrowConflictExceptionWhenNameExists() {
+        GymCreateDto dto = new GymCreateDto(NAME, ADDRESS, PHONE);
+        when(repository.existsByName(NAME)).thenReturn(true);
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> service.createGym(dto));
-        assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
-        assert exception.getReason() != null;
-        assertTrue(exception.getReason().contains("already exists"));
-        verify(mapper, never()).toEntity(any());
+
+        assertAll("Conflict exception details",
+                () -> assertEquals(HttpStatus.CONFLICT, exception.getStatusCode()),
+                () -> {
+                    assert exception.getReason() != null;
+                    assertTrue(exception.getReason().contains("already exists"));
+                }
+        );
+
         verify(repository, never()).save(any());
+        verify(mapper, never()).toEntity(any());
     }
 
     @Test
-    void shouldReturnRevenueReportFromRepository() {
-        List<RevenueReportDto> expectedReport = List.of(
+    void shouldReturnRevenueReport() {
+        List<RevenueReportDto> report = List.of(
                 new RevenueReportDto("Gym 1", new Price(new BigDecimal("297.01"), Currency.getInstance("PLN"))),
                 new RevenueReportDto("Gym 1", new Price(new BigDecimal("20.99"), Currency.getInstance("EUR")))
         );
-        when(repository.getRevenueReport()).thenReturn(expectedReport);
+        when(repository.getRevenueReport()).thenReturn(report);
 
         List<RevenueReportDto> result = service.getRevenue();
 
-        assertEquals(2, result.size());
-        assertEquals(expectedReport, result);
-        verify(repository, times(1)).getRevenueReport();
+        assertAll("Revenue report",
+                () -> assertEquals(2, result.size()),
+                () -> assertEquals(report, result)
+        );
+        verify(repository).getRevenueReport();
     }
 }

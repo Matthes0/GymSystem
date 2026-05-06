@@ -34,76 +34,76 @@ class MemberServiceTest {
     @InjectMocks
     private MemberService service;
 
+    private static final Long PLAN_ID = 1L;
+    private static final Long MEMBER_ID = 10L;
+    private static final String NAME = "Janusz Fitness";
+    private static final String EMAIL = "janusz@gym.pl";
+    private static final int MAX_MEMBERS = 10;
+
     @Test
     void shouldRegisterMemberSuccessfully() {
-        Long planId = 1L;
-        MembershipPlan plan = new MembershipPlan();
-        plan.setId(planId);
-        plan.setMaxMembers(10);
-
-        MemberCreateDto createDto = new MemberCreateDto("Janusz Fitness", "janusz@gym.pl");
+        MembershipPlan plan = createPlan(PLAN_ID, MAX_MEMBERS);
+        MemberCreateDto createDto = new MemberCreateDto(NAME, EMAIL);
         Member member = new Member();
         Member savedMember = new Member();
         MemberDetailsDto expectedDto = mock(MemberDetailsDto.class);
 
-        when(membershipPlanRepository.findById(planId)).thenReturn(Optional.of(plan));
-        when(memberRepository.countByMembershipPlanIdAndStatus(planId, Status.ACTIVE)).thenReturn(5L);
+        when(membershipPlanRepository.findById(PLAN_ID)).thenReturn(Optional.of(plan));
+        when(memberRepository.countByMembershipPlanIdAndStatus(PLAN_ID, Status.ACTIVE)).thenReturn(5L);
         when(memberMapper.toEntity(createDto)).thenReturn(member);
         when(memberRepository.save(member)).thenReturn(savedMember);
         when(memberMapper.toDetailsDto(savedMember)).thenReturn(expectedDto);
 
-        MemberDetailsDto result = service.registerNewMember(planId, createDto);
+        MemberDetailsDto result = service.registerNewMember(PLAN_ID, createDto);
 
-        assertNotNull(result);
-        assertEquals(Status.ACTIVE, member.getStatus());
-        assertNotNull(member.getMembershipStartDate());
+        assertAll("Registration success",
+                () -> assertNotNull(result),
+                () -> assertEquals(Status.ACTIVE, member.getStatus()),
+                () -> assertNotNull(member.getMembershipStartDate())
+        );
         verify(memberRepository).save(member);
     }
 
     @Test
     void shouldThrowBadRequestWhenPlanIsFull() {
-        Long planId = 1L;
-        MembershipPlan plan = new MembershipPlan();
-        plan.setId(planId);
-        plan.setMaxMembers(10);
+        MembershipPlan plan = createPlan(PLAN_ID, MAX_MEMBERS);
+        MemberCreateDto createDto = new MemberCreateDto(NAME, EMAIL);
 
-        MemberCreateDto createDto = new MemberCreateDto("Pudzian", "mario@pudzian.pl");
-
-        when(membershipPlanRepository.findById(planId)).thenReturn(Optional.of(plan));
-        when(memberRepository.countByMembershipPlanIdAndStatus(planId, Status.ACTIVE)).thenReturn(10L);
+        when(membershipPlanRepository.findById(PLAN_ID)).thenReturn(Optional.of(plan));
+        when(memberRepository.countByMembershipPlanIdAndStatus(PLAN_ID, Status.ACTIVE)).thenReturn((long) MAX_MEMBERS);
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> service.registerNewMember(planId, createDto));
+                () -> service.registerNewMember(PLAN_ID, createDto));
 
-        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
-        assert exception.getReason() != null;
-        assertTrue(exception.getReason().contains("already full"));
+        assertAll("Plan full exception",
+                () -> assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode()),
+                () -> {
+                    assert exception.getReason() != null;
+                    assertTrue(exception.getReason().contains("already full"));
+                }
+        );
         verify(memberRepository, never()).save(any());
     }
 
     @Test
     void shouldThrowNotFoundWhenPlanDoesNotExist() {
-        Long planId = 999L;
-        when(membershipPlanRepository.findById(planId)).thenReturn(Optional.empty());
+        when(membershipPlanRepository.findById(PLAN_ID)).thenReturn(Optional.empty());
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> service.registerNewMember(planId, mock(MemberCreateDto.class)));
+                () -> service.registerNewMember(PLAN_ID, new MemberCreateDto(NAME, EMAIL)));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
     }
 
     @Test
     void shouldCancelMembershipSuccessfully() {
-        Long memberId = 1L;
-        Member member = new Member();
-        member.setId(memberId);
-        member.setStatus(Status.ACTIVE);
+        Member member = createMember(MEMBER_ID, Status.ACTIVE);
 
-        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        when(memberRepository.findById(MEMBER_ID)).thenReturn(Optional.of(member));
         when(memberRepository.save(member)).thenReturn(member);
         when(memberMapper.toDetailsDto(member)).thenReturn(mock(MemberDetailsDto.class));
 
-        service.cancelMembership(memberId);
+        service.cancelMembership(MEMBER_ID);
 
         assertEquals(Status.CANCELLED, member.getStatus());
         verify(memberRepository).save(member);
@@ -112,27 +112,49 @@ class MemberServiceTest {
     @Test
     void shouldReturnAllMembers() {
         Member member = new Member();
+        MemberSimpleDto simpleDto = mock(MemberSimpleDto.class);
+
         when(memberRepository.findAll()).thenReturn(List.of(member));
-        when(memberMapper.toSimpleDto(member)).thenReturn(mock(MemberSimpleDto.class));
+        when(memberMapper.toSimpleDto(member)).thenReturn(simpleDto);
 
         List<MemberSimpleDto> result = service.getAllMembers();
 
-        assertEquals(1, result.size());
+        assertAll("Get all members",
+                () -> assertEquals(1, result.size()),
+                () -> assertEquals(simpleDto, result.get(0))
+        );
         verify(memberRepository).findAll();
     }
 
     @Test
     void shouldThrowNotFoundWhenCancellingNonExistentMember() {
-        Long nonExistentMemberId = 999L;
-
-        when(memberRepository.findById(nonExistentMemberId)).thenReturn(Optional.empty());
+        when(memberRepository.findById(MEMBER_ID)).thenReturn(Optional.empty());
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> service.cancelMembership(nonExistentMemberId));
+                () -> service.cancelMembership(MEMBER_ID));
 
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+        assertAll("Member not found exception",
+                () -> assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode()),
+                () -> {
+                    assert exception.getReason() != null;
+                    assertTrue(exception.getReason().contains("not found"));
+                }
+        );
         verify(memberRepository, never()).save(any());
-        assert exception.getReason() != null;
-        assertTrue(exception.getReason().contains("not found"));
+    }
+
+
+    private MembershipPlan createPlan(Long id, int maxMembers) {
+        MembershipPlan plan = new MembershipPlan();
+        plan.setId(id);
+        plan.setMaxMembers(maxMembers);
+        return plan;
+    }
+
+    private Member createMember(Long id, Status status) {
+        Member member = new Member();
+        member.setId(id);
+        member.setStatus(status);
+        return member;
     }
 }

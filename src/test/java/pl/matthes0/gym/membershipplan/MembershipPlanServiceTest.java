@@ -36,47 +36,48 @@ class MembershipPlanServiceTest {
     @InjectMocks
     private MembershipPlanService service;
 
+    private static final Long GYM_ID = 1L;
+    private static final Long PLAN_ID = 10L;
+    private static final String PLAN_NAME = "Pro Plan";
+    private static final BigDecimal PRICE_AMOUNT = new BigDecimal("150.00");
+    private static final String CURRENCY_CODE = "PLN";
+
     @Test
     void shouldCreateMembershipPlanSuccessfully() {
-        Long gymId = 1L;
-        Gym gym = new Gym();
-        gym.setId(gymId);
-
-        Price price = new Price(new BigDecimal("150.00"), Currency.getInstance("PLN"));
-        MembershipPlanCreateDto createDto = new MembershipPlanCreateDto(
-                "Pro Plan", Plan.PREMIUM, price, 12, 100);
+        Gym gym = createGym(GYM_ID);
+        Price price = new Price(PRICE_AMOUNT, Currency.getInstance(CURRENCY_CODE));
+        MembershipPlanCreateDto createDto = new MembershipPlanCreateDto(PLAN_NAME, Plan.PREMIUM, price, 12, 100);
 
         MembershipPlan membershipPlan = new MembershipPlan();
         MembershipPlan savedPlan = new MembershipPlan();
-        savedPlan.setId(10L);
+        savedPlan.setId(PLAN_ID);
 
         MembershipPlanDetailsDto expectedDto = new MembershipPlanDetailsDto(
-                10L, "Pro Plan", Plan.PREMIUM, price, 12, 100, null);
+                PLAN_ID, PLAN_NAME, Plan.PREMIUM, price, 12, 100, null);
 
-        when(gymRepository.findById(gymId)).thenReturn(Optional.of(gym));
+        when(gymRepository.findById(GYM_ID)).thenReturn(Optional.of(gym));
         when(membershipPlanMapper.toEntity(createDto)).thenReturn(membershipPlan);
         when(membershipPlanRepository.save(membershipPlan)).thenReturn(savedPlan);
         when(membershipPlanMapper.toDetailsDto(savedPlan)).thenReturn(expectedDto);
 
-        MembershipPlanDetailsDto result = service.createMembershipPlan(gymId, createDto);
+        MembershipPlanDetailsDto result = service.createMembershipPlan(GYM_ID, createDto);
 
-        assertNotNull(result);
-        assertEquals(expectedDto, result);
-        verify(gymRepository).findById(gymId);
+        assertAll("Membership plan creation",
+                () -> assertNotNull(result),
+                () -> assertEquals(expectedDto, result),
+                () -> assertEquals(gym, membershipPlan.getGym())
+        );
+        verify(gymRepository).findById(GYM_ID);
         verify(membershipPlanRepository).save(membershipPlan);
-        assertEquals(gym, membershipPlan.getGym());
     }
 
     @Test
     void shouldThrowNotFoundWhenGymDoesNotExistDuringCreation() {
-        Long gymId = 999L;
-        MembershipPlanCreateDto dto = new MembershipPlanCreateDto(
-                "Name", Plan.BASIC, null, 1, 10);
-
-        when(gymRepository.findById(gymId)).thenReturn(Optional.empty());
+        MembershipPlanCreateDto dto = new MembershipPlanCreateDto("Name", Plan.BASIC, null, 1, 10);
+        when(gymRepository.findById(GYM_ID)).thenReturn(Optional.empty());
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> service.createMembershipPlan(gymId, dto));
+                () -> service.createMembershipPlan(GYM_ID, dto));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
         verify(membershipPlanRepository, never()).save(any());
@@ -84,38 +85,43 @@ class MembershipPlanServiceTest {
 
     @Test
     void shouldReturnAllPlansForGym() {
-        Long gymId = 1L;
         MembershipPlan plan1 = new MembershipPlan();
         MembershipPlan plan2 = new MembershipPlan();
-
         MembershipPlanDetailsDto dto1 = mock(MembershipPlanDetailsDto.class);
         MembershipPlanDetailsDto dto2 = mock(MembershipPlanDetailsDto.class);
 
-        when(gymRepository.existsById(gymId)).thenReturn(true);
-        when(membershipPlanRepository.findByGymId(gymId)).thenReturn(List.of(plan1, plan2));
+        when(gymRepository.existsById(GYM_ID)).thenReturn(true);
+        when(membershipPlanRepository.findByGymId(GYM_ID)).thenReturn(List.of(plan1, plan2));
         when(membershipPlanMapper.toDetailsDto(plan1)).thenReturn(dto1);
         when(membershipPlanMapper.toDetailsDto(plan2)).thenReturn(dto2);
 
-        List<MembershipPlanDetailsDto> result = service.getAllMembershipPlans(gymId);
+        List<MembershipPlanDetailsDto> result = service.getAllMembershipPlans(GYM_ID);
 
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        assertEquals(dto1, result.get(0));
-        assertEquals(dto2, result.get(1));
-        verify(gymRepository).existsById(gymId);
-        verify(membershipPlanRepository).findByGymId(gymId);
-        verify(membershipPlanMapper, times(2)).toDetailsDto(any(MembershipPlan.class));
+        assertAll("Get all plans success",
+                () -> assertNotNull(result),
+                () -> assertEquals(2, result.size()),
+                () -> assertEquals(dto1, result.get(0)),
+                () -> assertEquals(dto2, result.get(1))
+        );
+        verify(gymRepository).existsById(GYM_ID);
+        verify(membershipPlanRepository).findByGymId(GYM_ID);
     }
 
     @Test
     void shouldThrowNotFoundWhenGymDoesNotExistDuringGetAll() {
-        Long gymId = 999L;
-        when(gymRepository.existsById(gymId)).thenReturn(false);
+        when(gymRepository.existsById(GYM_ID)).thenReturn(false);
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> service.getAllMembershipPlans(gymId));
+                () -> service.getAllMembershipPlans(GYM_ID));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
         verify(membershipPlanRepository, never()).findByGymId(any());
+    }
+
+
+    private Gym createGym(Long id) {
+        Gym gym = new Gym();
+        gym.setId(id);
+        return gym;
     }
 }

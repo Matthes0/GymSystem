@@ -10,46 +10,60 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class GymValidationTest {
+class GymValidationTest {
+
     private Validator validator;
 
     @BeforeEach
     void setUp() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            validator = factory.getValidator();
+        }
     }
 
     @Test
     void shouldHaveViolationsWhenFieldIsBlank() {
-        Gym gym = new Gym();
-        gym.setName("");
-        gym.setAddress("");
-        gym.setPhoneNumber("");
+        Gym gym = createGym("", "", "");
 
-        Set<ConstraintViolation<Gym>> violations = validator.validate(gym);
-        List<String> invalidProperties = violations.stream()
-                .map(v -> v.getPropertyPath().toString())
-                .toList();
+        List<String> invalidProperties = validateAndGetInvalidProperties(gym);
 
-        assertEquals(3, violations.size());
-        assertTrue(invalidProperties.containsAll(List.of("name", "address", "phoneNumber")));
+        assertAll("Blank fields validation",
+                () -> assertEquals(3, invalidProperties.size(), "Should have exactly 3 violations"),
+                () -> assertTrue(invalidProperties.containsAll(List.of("name", "address", "phoneNumber")),
+                        "Violations should occur on name, address and phoneNumber")
+        );
     }
 
     @Test
     void shouldHaveViolationsWhenFieldIsTooLong() {
-        Gym gym = new Gym();
-        gym.setName("a".repeat(105));
-        gym.setAddress("a".repeat(300));
-        gym.setPhoneNumber("a".repeat(30));
+        Gym gym = createGym(
+                "a".repeat(101),
+                "a".repeat(256),
+                "1".repeat(21)
+        );
 
+        List<String> invalidProperties = validateAndGetInvalidProperties(gym);
+
+        assertAll("Too long fields validation",
+                () -> assertEquals(3, invalidProperties.size()),
+                () -> assertTrue(invalidProperties.containsAll(List.of("name", "address", "phoneNumber")))
+        );
+    }
+
+    private Gym createGym(String name, String address, String phone) {
+        Gym gym = new Gym();
+        gym.setName(name);
+        gym.setAddress(address);
+        gym.setPhoneNumber(phone);
+        return gym;
+    }
+
+    private List<String> validateAndGetInvalidProperties(Gym gym) {
         Set<ConstraintViolation<Gym>> violations = validator.validate(gym);
-        List<String> invalidProperties = violations.stream()
+        return violations.stream()
                 .map(v -> v.getPropertyPath().toString())
                 .toList();
-        assertEquals(3, violations.size());
-        assertTrue(invalidProperties.containsAll(List.of("name", "address", "phoneNumber")));
     }
 }

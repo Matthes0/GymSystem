@@ -1,6 +1,5 @@
 package pl.matthes0.gym.member;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,46 +27,43 @@ class MemberMapperTest {
     @InjectMocks
     private MemberMapper mapper;
 
-    // success test cases
+    private static final String FULL_NAME = "Jan Kowalski";
+    private static final String EMAIL = "jan@test.com";
+    private static final Long MEMBER_ID = 1L;
 
     @Test
-    @DisplayName("Should correctly map MemberCreateDto to Member entity")
     void shouldMapDtoToEntity() {
-        MemberCreateDto dto = new MemberCreateDto("Jan Kowalski", "jan@test.com");
+        MemberCreateDto dto = new MemberCreateDto(FULL_NAME, EMAIL);
 
         Member result = mapper.toEntity(dto);
 
-        assertNotNull(result);
-        assertEquals("Jan Kowalski", result.getFullName());
-        assertEquals("jan@test.com", result.getEmail());
-        assertNull(result.getId());
+        assertAll("Member mapping",
+                () -> assertNotNull(result),
+                () -> assertEquals(FULL_NAME, result.getFullName()),
+                () -> assertEquals(EMAIL, result.getEmail()),
+                () -> assertNull(result.getId())
+        );
     }
 
     @Test
-    @DisplayName("Should correctly map Member entity to MemberDetailsDto")
     void shouldMapEntityToDetailsDto() {
         MembershipPlan plan = new MembershipPlan();
-        Member member = new Member();
-        member.setId(1L);
-        member.setFullName("Jan Kowalski");
-        member.setEmail("jan@test.com");
-        member.setMembershipStartDate(LocalDate.now());
-        member.setStatus(Status.ACTIVE);
-        member.setMembershipPlan(plan);
+        Member member = createMember(MEMBER_ID, FULL_NAME, EMAIL, Status.ACTIVE, LocalDate.now(), plan);
 
         MembershipPlanDetailsDto planDto = new MembershipPlanDetailsDto(1L, "Plan", null, null, 1, 10, null);
         when(membershipPlanMapper.toDetailsDto(plan)).thenReturn(planDto);
 
         MemberDetailsDto result = mapper.toDetailsDto(member);
 
-        assertNotNull(result);
-        assertEquals(1L, result.id());
-        assertEquals("Jan Kowalski", result.fullName());
-        assertEquals(planDto, result.membershipPlanDetailsDto());
+        assertAll("MemberDetailsDto mapping",
+                () -> assertNotNull(result),
+                () -> assertEquals(MEMBER_ID, result.id()),
+                () -> assertEquals(FULL_NAME, result.fullName()),
+                () -> assertEquals(planDto, result.membershipPlanDetailsDto())
+        );
     }
 
     @Test
-    @DisplayName("Should correctly map Member entity to MemberSimpleDto")
     void shouldMapEntityToSimpleDto() {
         Gym gym = new Gym();
         gym.setName("Power Gym");
@@ -76,62 +72,52 @@ class MemberMapperTest {
         plan.setName("Basic Plan");
         plan.setGym(gym);
 
-        Member member = new Member();
-        member.setId(1L);
-        member.setFullName("Jan Kowalski");
-        member.setEmail("jan@test.com");
-        member.setMembershipStartDate(LocalDate.now());
-        member.setStatus(Status.ACTIVE);
-        member.setMembershipPlan(plan);
+        Member member = createMember(MEMBER_ID, FULL_NAME, EMAIL, Status.ACTIVE, LocalDate.now(), plan);
 
         MemberSimpleDto result = mapper.toSimpleDto(member);
 
-        assertNotNull(result);
-        assertEquals(1L, result.id());
-        assertEquals("Jan Kowalski", result.fullName());
-        assertEquals("Basic Plan", result.planName());
-        assertEquals("Power Gym", result.gymName());
-    }
-
-
-    @Test
-    @DisplayName("Should return null when mapping null MemberCreateDto")
-    void shouldReturnNullWhenToEntityInputIsNull() {
-        Member result = mapper.toEntity(null);
-
-        assertNull(result);
+        assertAll("MemberSimpleDto mapping",
+                () -> assertNotNull(result),
+                () -> assertEquals(MEMBER_ID, result.id()),
+                () -> assertEquals(FULL_NAME, result.fullName()),
+                () -> assertEquals("Basic Plan", result.planName()),
+                () -> assertEquals("Power Gym", result.gymName())
+        );
     }
 
     @Test
-    @DisplayName("Should return null when mapping null Member entity to DetailsDto")
-    void shouldReturnNullWhenToDetailsDtoInputIsNull() {
-        MemberDetailsDto result = mapper.toDetailsDto(null);
-
-        assertNull(result);
+    void shouldReturnNullWhenInputsAreNull() {
+        assertAll("Null handling",
+                () -> assertNull(mapper.toEntity(null)),
+                () -> assertNull(mapper.toDetailsDto(null)),
+                () -> assertNull(mapper.toSimpleDto(null))
+        );
     }
 
     @Test
-    @DisplayName("Should return null when mapping null Member entity to SimpleDto")
-    void shouldReturnNullWhenToSimpleDtoInputIsNull() {
-        MemberSimpleDto result = mapper.toSimpleDto(null);
-
-        assertNull(result);
-    }
-
-    @Test
-    @DisplayName("Should handle Member entity with null fields correctly in DetailsDto")
-    void shouldMapEntityWithPartialDataToDetailsDto() {
-        Member member = new Member();
-        member.setId(99L);
-        member.setFullName("Minimalist Member");
-        member.setMembershipPlan(null);
+    void shouldHandleMemberEntityWithNullFieldsInDetailsDto() {
+        Member member = createMember(99L, "Minimalist Member", EMAIL, Status.ACTIVE, LocalDate.now(), null);
 
         when(membershipPlanMapper.toDetailsDto(null)).thenReturn(null);
 
         MemberDetailsDto result = mapper.toDetailsDto(member);
 
-        assertNotNull(result);
-        assertEquals(99L, result.id());
-        assertNull(result.membershipPlanDetailsDto());
+        assertAll("Partial data mapping",
+                () -> assertNotNull(result),
+                () -> assertEquals(99L, result.id()),
+                () -> assertNull(result.membershipPlanDetailsDto())
+        );
+    }
+
+
+    private Member createMember(Long id, String name, String email, Status status, LocalDate date, MembershipPlan plan) {
+        Member member = new Member();
+        member.setId(id);
+        member.setFullName(name);
+        member.setEmail(email);
+        member.setStatus(status);
+        member.setMembershipStartDate(date);
+        member.setMembershipPlan(plan);
+        return member;
     }
 }
