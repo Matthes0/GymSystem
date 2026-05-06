@@ -17,7 +17,7 @@ Once started, the application will be available at ```http://localhost:8080```
 *Note: All commands assume being in the main project directory and using included Maven wrapper. If you have Maven configured locally you can substitute ```./mvnw``` with ```mvn```.*
 
 ## Database Access
-Project uses an H2 in-memory database.
+Project uses an H2 in-memory database. Credentials are public for the sake of testing.
 - **H2 Console**: ```http://localhost:8080/h2-console```
 - **JDBC URL**: ```jdbc:h2:mem:testdb```
 - **Credentials**: User: ```sa``` / Password: ``` ``` (empty)
@@ -27,12 +27,12 @@ Base URL: ```http://localhost:8080/api```
 
 *Note: All endpoints communicate using JSON format.*
 
-- ```/gyms ``` - **[POST]** - Create a new gym
+- ```/gyms``` - **[POST]** - Create a new gym
 - ```/gyms``` - **[GET]** - List all gyms
 - ```/gyms/{id}/membership-plans``` - **[POST]** - Create a new membership plan for a given gym
 - ```/gyms/{id}/membership-plans``` - **[GET]** - List all membership plans for a given gym
 - ```/membership-plans/{id}/members``` - **[POST]** - Register a new member to a given membership plan
-- ```/members ``` - **[GET]** - List all members along with their plan name and gym name
+- ```/members``` - **[GET]** - List all members along with their plan name and gym name
 - ```/members/{id}/cancel``` - **[PATCH]** - Cancel a membership
 - ```/gyms/revenue``` - **[GET]** - Return the revenue report
 
