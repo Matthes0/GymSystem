@@ -1,7 +1,7 @@
 # Gym Membership Management System
 
 ## Prerequisites:
-- **Java**: Java 25 (developed and tested using Java 25, Spring Boot 4.0.6 requires at least Java 17)
+- **Java**: Java 25 (developed and tested using Java 25, compatible with Java 17+ (verified by running the test suite after changing ```java.version``` in ```pom.xml```)
 - **Build Tool**: Maven 3.9.14 (configured via included Maven Wrapper, compatible with Maven 3.6.3+)
 
 
