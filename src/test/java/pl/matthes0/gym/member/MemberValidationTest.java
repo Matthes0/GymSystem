@@ -44,7 +44,6 @@ class MemberValidationTest {
 
     @Test
     void shouldHaveViolationsWhenFieldsAreTooLong() {
-        // Given
         Member member = createMember(
                 "a".repeat(101),
                 "a".repeat(96) + "@test.com",
